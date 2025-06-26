@@ -1,0 +1,104 @@
+/* Base Styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #fafafa;
+  height: 100%;
+}
+
+/* Centering Container */
+.rcontainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Form Box */
+.rcontent {
+  background-color: #fff;
+  padding: 40px 50px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 950px; /* increased from 400px to 600px */
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* reduced gap to avoid too much height */
+}
+
+
+/* Heading */
+.form-heading {
+  text-align: center;
+  color: #2c3e50;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+/* Labels */
+.rcontent label {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Inputs & Select */
+.rcontent input,
+.rcontent select {
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #eaf0ff;
+  outline: none;
+  transition: border 0.3s ease;
+}
+
+.rcontent input:focus,
+.rcontent select:focus {
+  border-color: #2c3e50;
+}
+
+/* Primary Button */
+.rcontent button {
+  padding: 12px;
+  background-color: #2c3e50;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.rcontent button:hover {
+  background-color: #1d2a36;
+}
+
+/* Login Prompt */
+.login-prompt {
+  text-align: center;
+  margin: 10px 0 0 0;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Login Button */
+.login-btn {
+  padding: 8px 12px;
+  margin: 0 auto;
+  width: 100px;
+  border: 2px solid #2c3e50;
+  background: transparent;
+  color: #2c3e50;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: #2c3e50;
+  color: white;
+}

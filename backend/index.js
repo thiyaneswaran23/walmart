@@ -10,7 +10,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
+const auth=require('./routes/authRoutes.js');
+app.use('/api/auth',auth);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
