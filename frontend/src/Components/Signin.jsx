@@ -5,7 +5,7 @@ import './signin.css';
 function Signin(){
 const nav=useNavigate();
     const handleLogin=()=>{
-       
+       nav("/home")
     }
 
 
