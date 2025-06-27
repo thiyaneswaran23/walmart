@@ -7,7 +7,7 @@ const PrivateRoute = () => {
     { return <Outlet /> 
      } 
      else{
-     return <Navigate to="/signin" replace />;
+     return <Navigate to="/" replace />;
      }
 };
 

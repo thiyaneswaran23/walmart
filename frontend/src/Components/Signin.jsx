@@ -15,7 +15,7 @@ function Signin() {
         password
       });
       localStorage.setItem('token', res.data.token);
-      alert("Login successful!");
+      
       nav("/home");
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");

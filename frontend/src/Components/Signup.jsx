@@ -12,11 +12,6 @@ function Signup() {
     const [confirmPassword, setConfirmPassword] = useState('');
    
 
-     const validateEmail = (email) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-  const validatePassword = (password) =>
-    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password);
 
   const handleRegister = async () => {
     if(!email || !gender || !password || !confirmPassword)
@@ -24,15 +19,7 @@ function Signup() {
       alert("Enter all the fields correctly, missing field found");
       return;
     }
-     if (!validateEmail(email)) {
-      alert("Invalid email, please enter your correct mail id");
-      return;
-    }
-
-    if (!validatePassword(password)) {
-      alert("Password is not strong enough, opt for a stronger one");
-      return;
-    }
+    
 
       if (password !== confirmPassword) {
       alert("Ensure your password correctly ");
@@ -50,7 +37,7 @@ function Signup() {
     if (res.data) 
     {
       localStorage.setItem("token", res.data);         
-      alert("Successfully registered");
+     
       nav("/home");                                 
     }
     else 
