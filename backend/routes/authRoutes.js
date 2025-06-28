@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+const upload=require('../storage/multerConfig.js');
 
 const User = require('../models/userSchema.js');
 const Seller=require('../models/sellerSchema.js');
+const Products=require('../models/productSchema.js');
 
 router.post('/signup', async (req, res) => {
   const { name, gender, email, password } = req.body;
@@ -98,6 +99,23 @@ router.post("/seller/signin", async (req,res)=>{
 
 })
 
+router.post("/products",upload.single('image'), async(req,res)=>{
+            try{
+              const product=new Products({
+                sellerName:req.body.sellerName,
+                productName:req.body.productName,
+                price:req.body.price,
+                image:[req.file.path]
+              });
 
+              await product.save();
+              res.status(200).json({message:"product created"});
+            }
+            catch(err)
+            {
+              console.err(err);
+              res.status(500).json({error:"Server error"})
+            }
+});
 
 module.exports = router;
