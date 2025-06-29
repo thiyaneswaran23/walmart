@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const upload=require('../storage/multerConfig.js');
+
 
 const User = require('../models/userSchema.js');
 const Seller=require('../models/sellerSchema.js');
-const Products=require('../models/productSchema.js');
+
 
 router.post('/signup', async (req, res) => {
   const { name, gender, email, password } = req.body;
@@ -66,7 +66,8 @@ router.post("/seller/signup", async (req,res)=>{
 
     const token=jwt.sign({id:newSeller._id},process.env.JWT_SECRET,{expiresIn:"1h"});
 
-    return res.status(200).json(token);
+   return res.status(200).json({ token });
+
   }
   catch(err)
   {
@@ -91,43 +92,13 @@ router.post("/seller/signin", async (req,res)=>{
     }
 
     const token=jwt.sign({id:seller._id},process.env.JWT_SECRET,{expiresIn:"1h"});
-    return res.status(200).json(token);
+   return res.status(200).json({ token });
+
   }
   catch(err){
       res.status(400).json({message:err.message});
   }
 
 })
-
-router.post("/products",upload.single('image'), async(req,res)=>{
-            try{
-              const product=new Products({
-                sellerName:req.body.sellerName,
-                productName:req.body.productName,
-                price:req.body.price,
-                image:[req.file.path]
-              });
-
-              await product.save();
-              res.status(200).json({message:"product created"});
-            }
-            catch(err)
-            {
-              console.err(err);
-              res.status(500).json({error:"Server error"})
-            }
-});
-
-router.get("/products", async(req,res)=>{
-  try{
-    const products=await Products.find();
-    res.status(200).json(products);
-  }
-  catch(err)
-  {
-    console.error(err);
-    res.status(500).json({error:"Server error"});
-  }
-});
 
 module.exports = router;
