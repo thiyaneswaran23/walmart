@@ -118,4 +118,16 @@ router.post("/products",upload.single('image'), async(req,res)=>{
             }
 });
 
+router.get("/products", async(req,res)=>{
+  try{
+    const products=await Products.find();
+    res.status(200).json(products);
+  }
+  catch(err)
+  {
+    console.error(err);
+    res.status(500).json({error:"Server error"});
+  }
+});
+
 module.exports = router;
