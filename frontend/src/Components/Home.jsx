@@ -2,6 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 function Home() {
+
+  const[products,setProducts]=useState();
+
   const navigate = useNavigate();
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -10,7 +13,7 @@ function Home() {
 
   useEffect(()=>{
     axios.get('http://localhost:5000/api/auth/products').then((res)=>{
-      console.log(res.data);
+      setProducts(res.data);
     }).catch((err)=>{
       console.error(err);
     })
