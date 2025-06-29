@@ -37,7 +37,7 @@ function Signup() {
     if (res.data) 
     {
       localStorage.setItem("token", res.data);         
-     
+      localStorage.setItem("Id",res.data.newUser.id);
       nav("/home");                                 
     }
     else 

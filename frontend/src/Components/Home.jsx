@@ -19,10 +19,16 @@ function CustomerHome() {
     alert(`Cart contains ${cart.length} item(s).`);
   };
 
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async (product) => {
     const alreadyInCart = cart.some((item) => item._id === product._id);
     if (!alreadyInCart) {
-      setCart([...cart, product]);
+    setCart([...cart,product]);
+      const id=localStorage.getItem("Id");
+      axios.post("http://localhost:5000/api/cart/cartItems",{...product,id:id}).
+      then((res)=>{console.log(res.data);
+      alert(res.data.message)}
+    ).catch(err=>console.log(err));
+   
     } else {
       alert('Product already in cart');
     }

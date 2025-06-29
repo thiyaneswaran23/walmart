@@ -15,7 +15,7 @@ function Signin() {
         password
       });
       localStorage.setItem('token', res.data.token);
-      
+      localStorage.setItem("Id",res.data.user.id);
       nav("/home");
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
