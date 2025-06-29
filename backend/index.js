@@ -12,7 +12,10 @@ app.use(express.json());
 
 const auth=require('./routes/authRoutes.js');
 app.use('/api/auth',auth);
-
+const pro=require('./routes/productRoutes.js');
+app.use('/api/pro',pro);
+const cart=require('./routes/cartRoutes.js');
+app.use('/api/cart',cart);
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     app.listen(5000, () => {

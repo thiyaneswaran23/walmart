@@ -56,12 +56,11 @@ function CustomerHome() {
 
   return (
     <div className="customer-home-container">
-      <div className="customer-header">
+      <div className="custom-home-header">
+
+         <div className="customer-header">
         <h2>Welcome to SmartShop</h2>
-        <div className="header-buttons">
-          <button onClick={handleCartClick}>🛒 Cart ({cart.length})</button>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
+       
       </div>
 
       <div className="search-bar">
@@ -72,6 +71,14 @@ function CustomerHome() {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
+
+       <div className="header-buttons">
+          <button onClick={handleCartClick}>🛒 Cart ({cart.length})</button>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+
+      </div>
+     
 
       <div className="product-grid">
         {filteredProducts.length > 0 ? (
