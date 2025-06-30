@@ -29,4 +29,20 @@ router.get('/cartItems/:id', async(req,res)=>{
         res.status(500).json({error:"server error"});
     }
 })
+
+router.delete('/cartItems/:id', async (req, res) => {
+    const id= req.params.id;
+    try {
+        const check= await cart.findByIdAndDelete(id);
+        if (!check) {
+            return res.status(404).json({ error: "Item not found" });
+        }
+        res.status(200).json({ message: "Item removed from cart" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+
 module.exports=router;

@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Cart.css';
+import { useNavigate } from 'react-router-dom';
 
 function Cart() {
     const [cartItems, setCartItems] = useState([]);
-
+const navigate = useNavigate();
     useEffect(() => {
         const fetchCart = async () => {
             const id = localStorage.getItem('Id');
@@ -22,6 +23,15 @@ function Cart() {
         };
         fetchCart();
     }, []);
+
+    const handleRemoveItem = async (id) => {
+    try {
+        await axios.delete(`http://localhost:5000/api/cart/cartItems/${id}`);
+        setCartItems(prevItems => prevItems.filter(item => item._id !== id));
+    } catch (err) {
+        console.error("api error ", err);
+    }
+};
 
     const handleQuantityChange = (index, newQuantity) => {
         const updatedCart = [...cartItems];
@@ -56,7 +66,10 @@ function Cart() {
                                             handleQuantityChange(index, e.target.value)
                                         }
                                     />
-                                    <button className="remove-btn">Remove</button>
+                                    <button className="remove-btn" onClick={() => handleRemoveItem(item._id)}>
+                                    Remove
+                                   </button>
+
                                 </div>
                             </div>
                         </div>
@@ -79,7 +92,23 @@ function Cart() {
                     <span>${total.toFixed(2)}</span>
                 </div>
                 <input type="text" placeholder="Enter discount code" className="discount-input" />
-                <button className="checkout-btn">Proceed to Checkout</button>
+                
+
+ <button
+        className="checkout-btn"
+        onClick={() =>
+            navigate('/order', {
+                state: {
+                    cartItems,
+                    subtotal,
+                    discount,
+                    total
+                }
+            })
+        }
+    >
+        Proceed to Checkout
+    </button>
             </div>
         </div>
     );

@@ -95,12 +95,25 @@
     border: 1px solid #ccc;
 }
 
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
 .checkout-btn {
-    width: 100%;
-    padding: 10px;
-    background-color: black;
-    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
+    color: white;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.checkout-btn:hover {
+    background-color: #0056b3;
 }
