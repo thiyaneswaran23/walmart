@@ -16,7 +16,7 @@ function CustomerHome() {
 
   const handleCartClick = () => {
     console.log('Cart:', cart);
-    alert(`Cart contains ${cart.length} item(s).`);
+   navigate('/cart'); 
   };
 
   const handleAddToCart = async (product) => {

@@ -18,4 +18,15 @@ router.post('/cartItems', async (req,res)=>{
             res.status(500).json({error:"server error"});
     }
 })
+
+router.get('/cartItems/:id', async(req,res)=>{
+    const id=req.params.id;
+    try{
+        const cartItems=await cart.find({id:id});
+        res.status(200).json(cartItems);
+    }catch(err){
+        console.log(err);
+        res.status(500).json({error:"server error"});
+    }
+})
 module.exports=router;

@@ -5,6 +5,7 @@ import Signup from './Components/Signup'
 import Signin from './Components/Signin'
 import Home from './Components/Home'
 import PrivateRoute from './Components/PrivateRoute';
+import Cart from './Components/CartPage';
 function App() {
   
 
@@ -16,7 +17,9 @@ function App() {
        <Route path='/signin' element={<Signin/>}/>
         <Route element={<PrivateRoute />}>
           <Route path="/home" element={<Home />} />
+          <Route path="/cart" element={<Cart />} />
         </Route>
+        
     </Routes>
   )
 }
