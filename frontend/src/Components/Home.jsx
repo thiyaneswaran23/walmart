@@ -16,13 +16,19 @@ function CustomerHome() {
 
   const handleCartClick = () => {
     console.log('Cart:', cart);
-    alert(`Cart contains ${cart.length} item(s).`);
+   navigate('/cart'); 
   };
 
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async (product) => {
     const alreadyInCart = cart.some((item) => item._id === product._id);
     if (!alreadyInCart) {
-      setCart([...cart, product]);
+    setCart([...cart,product]);
+      const id=localStorage.getItem("Id");
+      axios.post("http://localhost:5000/api/cart/cartItems",{...product,id:id}).
+      then((res)=>{console.log(res.data);
+      alert(res.data.message)}
+    ).catch(err=>console.log(err));
+   
     } else {
       alert('Product already in cart');
     }
@@ -50,12 +56,11 @@ function CustomerHome() {
 
   return (
     <div className="customer-home-container">
-      <div className="customer-header">
+      <div className="custom-home-header">
+
+         <div className="customer-header">
         <h2>Welcome to SmartShop</h2>
-        <div className="header-buttons">
-          <button onClick={handleCartClick}>🛒 Cart ({cart.length})</button>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
+       
       </div>
 
       <div className="search-bar">
@@ -66,6 +71,14 @@ function CustomerHome() {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
+
+       <div className="header-buttons">
+          <button onClick={handleCartClick}>🛒 Cart ({cart.length})</button>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+
+      </div>
+     
 
       <div className="product-grid">
         {filteredProducts.length > 0 ? (
