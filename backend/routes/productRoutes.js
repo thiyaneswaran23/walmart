@@ -42,11 +42,9 @@ router.get('/all-products', async (req, res) => {
 router.delete('/products/:id', verifyToken, async (req, res) => {
   try {
     const product = await Products.findOne({ _id: req.params.id, sellerId: req.user.id });
-
     if (!product) {
       return res.status(404).json({ error: 'Product not found or unauthorized' });
     }
-
     await Products.deleteOne({ _id: req.params.id });
     res.status(200).json({ message: 'Product deleted successfully' });
   } catch (err) {
