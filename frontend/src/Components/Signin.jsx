@@ -16,6 +16,8 @@ function Signin() {
       });
       localStorage.setItem('token', res.data.token);
       localStorage.setItem("Id",res.data.user.id);
+      localStorage.setItem("email", res.data.email);
+
       nav("/home");
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");

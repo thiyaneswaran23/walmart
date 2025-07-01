@@ -38,6 +38,8 @@ function Signup() {
     {
       localStorage.setItem("token", res.data);         
       localStorage.setItem("Id",res.data.newUser.id);
+      localStorage.setItem("email", res.data.email);
+
       nav("/home");                                 
     }
     else 
