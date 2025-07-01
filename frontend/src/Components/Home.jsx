@@ -11,6 +11,9 @@ function CustomerHome() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState(''); 
   const [cart, setCart] = useState([]);
+  const[search,setSearch]=useState(false);
+  const [recentSearches, setRecentSearches] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -39,6 +42,7 @@ function CustomerHome() {
   };
 
   useEffect(() => {
+    
     const token = localStorage.getItem('token');
     axios.get('http://localhost:5000/api/pro/all-products', {
       headers: {
@@ -66,6 +70,35 @@ function CustomerHome() {
         return 0; 
       }
     });
+    useEffect(() => {
+  if (searchTerm === '') {
+    setSearch(false);
+    setShowDropdown(false);
+  }
+}, [searchTerm]);
+
+
+  const handleSetSearch = async () => {
+ 
+    setSearch(true);
+    setShowDropdown(false);
+    const id = localStorage.getItem("Id");
+    axios.post("http://localhost:5000/api/pro/search", { searchTerm, id: id })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch(err => console.log(err));
+  }
+  const handleSearchFocus = async () => {
+  const id = localStorage.getItem("Id");
+  try {
+    const res = await axios.get(`http://localhost:5000/api/pro/recent-searches/${id}`);
+    setRecentSearches(res.data);
+    setShowDropdown(true);
+  } catch (err) {
+    console.log(err);
+  }
+};
 
   return (
     <div className="customer-home-container">
@@ -75,17 +108,36 @@ function CustomerHome() {
         </div>
 
         <div className="search-sort-container">
-<div className="search-bar">
-  <input
-    type="text"
-    placeholder="Search products"
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-  />
-  <button className="search-icon-btn">
-    <FaSearch />
-  </button>
-</div>
+          <div className="search-bar" style={{ position: 'relative' }}>
+            <input
+              type="text"
+              placeholder="Search products"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onFocus={handleSearchFocus}
+            />
+            <button onClick={handleSetSearch} className="search-icon-btn">
+              <FaSearch />
+            </button>
+
+            {showDropdown && recentSearches.length > 0 && (
+              <ul className="recent-search-dropdown">
+                {recentSearches.map((term, index) => (
+                  <li
+                    key={index}
+                    onClick={() => {
+                      setSearchTerm(term);
+                      setShowDropdown(false);
+                      handleSetSearch(); // 👈 optional: trigger search after selecting
+                    }}
+                  >
+                    {term}
+                  </li>
+                ))}
+              </ul>
+            )}
+     </div>
+
 
           <div className="sort-dropdown">
             <select
@@ -105,30 +157,28 @@ function CustomerHome() {
         </div>
       </div>
 
-      <div className="product-grid">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((prod) => (
-            <div key={prod._id} className="product-card">
-              <img
-                src={prod.image?.[0]}
-                alt={prod.productName}
-              />
-              <h3>{prod.productName}</h3>
-              <p>Seller: {prod.sellerName}</p>
-              <p>₹{prod.price}</p>
-              <button
-                className="icon-cart-btn"
-                onClick={() => handleAddToCart(prod)}
-                title="Add to Cart"
-              >
-                <FaCartPlus />
-              </button>
-            </div>
-          ))
-        ) : (
-          <div className="no-products">No matching products found</div>
-        )}
+     <div className="product-grid">
+  {(search ? filteredProducts : products).length > 0 ? (
+    (search ? filteredProducts : products).map((prod) => (
+      <div key={prod._id} className="product-card">
+        <img src={prod.image?.[0]} alt={prod.productName} />
+        <h3>{prod.productName}</h3>
+        <p>Seller: {prod.sellerName}</p>
+        <p>₹{prod.price}</p>
+        <button
+          className="icon-cart-btn"
+          onClick={() => handleAddToCart(prod)}
+          title="Add to Cart"
+        >
+          <FaCartPlus />
+        </button>
       </div>
+    ))
+  ) : (
+    <div className="no-products">No matching products found</div>
+  )}
+</div>
+
     </div>
   );
 }

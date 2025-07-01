@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const upload = require('../storage/multerConfig'); 
 const Products = require('../models/productSchema');
+const Search = require('../models/searchShema'); 
 const verifyToken = require('../middleware/verifyToken'); 
 router.post('/products', verifyToken, upload.single('image'), async (req, res) => {
   try {
@@ -52,5 +53,31 @@ router.delete('/products/:id', verifyToken, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+router.post('/search',  async (req, res) => {
+  try {
+    const { searchTerm, id } = req.body;
+    const search = new Search({ searchTerm, id });
+    await search.save();
+    res.status(201).json({ message: 'Search term saved successfully', search });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
+router.get('/recent-searches/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const searches = await Search.find({ id }).sort({ createdAt: -1 }).limit(5); 
+    const terms = searches.map(item => item.searchTerm);
+    res.json(terms);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 module.exports = router;
