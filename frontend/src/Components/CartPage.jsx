@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './Cart.css';
 import { useNavigate } from 'react-router-dom';
+import { FaTrash } from 'react-icons/fa';
 
 function Cart() {
     const [cartItems, setCartItems] = useState([]);
@@ -66,9 +67,13 @@ const navigate = useNavigate();
                                             handleQuantityChange(index, e.target.value)
                                         }
                                     />
-                                    <button className="remove-btn" onClick={() => handleRemoveItem(item._id)}>
-                                    Remove
-                                   </button>
+                                  <button
+  className="remove-icon-btn"
+  onClick={() => handleRemoveItem(item._id)}
+  title="Remove Item"
+>
+  <FaTrash />
+</button>
 
                                 </div>
                             </div>

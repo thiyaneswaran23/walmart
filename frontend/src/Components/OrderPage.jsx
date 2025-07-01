@@ -7,36 +7,30 @@ function OrderPage() {
     const navigate = useNavigate();
     const { state } = useLocation();
 
-    const cartItems = state?.cartItems || [];
-    const subtotal = state?.subtotal || 0;
-    const discount = state?.discount || 0;
-    const total = state?.total || 0;
-
+    const cartItems = state?.cartItems;
+    const subtotal = state?.subtotal;
+    const discount = state?.discount;
+    const total = state?.total;
     const handleBackToCart = () => {
         navigate('/cart');
     };
 
- const generatePDF = () => {
-    const input = document.getElementById('receipt');
-    html2canvas(input, {
-        scale: 2,
-        useCORS: true,
-        logging: true
-    })
-    .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save('OrderReceipt.pdf');
-    })
-    .catch((err) => {
-        console.error('eror', err);
-    });
-};
-
-
+    const generatePDF = async () => {
+        const input = document.getElementById('receipt');
+        try {
+            const canvas = await html2canvas(input, { scale: 2, useCORS: true });
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save('OrderReceipt.pdf');
+            alert('PDF receipt downloaded successfully!');
+        } catch (err) {
+            console.error('Error generating PDF:', err);
+            alert('Failed to generate the receipt.');
+        }
+    };
 
     return (
         <>
@@ -53,12 +47,11 @@ function OrderPage() {
                         <div className="cart-items">
                             {cartItems.map((item, index) => (
                                 <div key={index} className="cart-card">
-                                    <img 
-                                    src={item.image[0]} 
-                                     alt={item.productName} 
-                                    crossOrigin="anonymous"
+                                    <img
+                                        src={item.image[0]}
+                                        alt={item.productName}
+                                        crossOrigin="anonymous"
                                     />
-
                                     <div className="cart-info">
                                         <h4>{item.productName}</h4>
                                         <p>Price: ${item.price.toFixed(2)}</p>
@@ -86,17 +79,14 @@ function OrderPage() {
                         <span>Grand Total</span>
                         <span>${total.toFixed(2)}</span>
                     </div>
-                    <p>You'll receive an email with your order details shortly.</p>
+                    <p>You can download a PDF of your receipt below.</p>
                 </div>
             </div>
 
-           <div className="button-group">
-    <button className="checkout-btn" onClick={handleBackToCart}>Back to Cart</button>
-    <button className="checkout-btn" onClick={generatePDF}>
-        Download PDF Receipt
-    </button>
-</div>
-
+            <div className="button-group">
+                <button className="checkout-btn" onClick={handleBackToCart}>Back to Cart</button>
+                <button className="checkout-btn" onClick={generatePDF}>Download PDF Receipt</button>
+            </div>
         </>
     );
 }
