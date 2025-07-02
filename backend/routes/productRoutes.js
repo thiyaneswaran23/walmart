@@ -24,6 +24,9 @@ router.post('/products', verifyToken, upload.single('image'), async (req, res) =
 router.get('/products', verifyToken, async (req, res) => {
   try {
     const products = await Products.find({ sellerId: req.user.id });
+    if(!products || products.length === 0) {
+      return res.status(404).json({ message: 'No products found for this seller' });
+    }
     res.status(200).json(products);
   } catch (err) {
     console.error(err);
