@@ -7,6 +7,7 @@ import Home from './Components/Home'
 import PrivateRoute from './Components/PrivateRoute';
 import Cart from './Components/CartPage';
 import OrderPage from './Components/OrderPage'
+import ProductDetails from './Components/ProductDetails'
 function App() {
   
 
@@ -20,6 +21,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/cart" element={<Cart />} />
             <Route path="/order" element={<OrderPage />} />
+            <Route path="/product/:id" element={<ProductDetails />} />
         </Route>
         
     </Routes>

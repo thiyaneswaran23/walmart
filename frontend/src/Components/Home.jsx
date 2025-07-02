@@ -160,19 +160,23 @@ function CustomerHome() {
      <div className="product-grid">
   {(search ? filteredProducts : products).length > 0 ? (
     (search ? filteredProducts : products).map((prod) => (
-      <div key={prod._id} className="product-card">
-        <img src={prod.image?.[0]} alt={prod.productName} />
-        <h3>{prod.productName}</h3>
-        <p>Seller: {prod.sellerName}</p>
-        <p>₹{prod.price}</p>
-        <button
-          className="icon-cart-btn"
-          onClick={() => handleAddToCart(prod)}
-          title="Add to Cart"
-        >
-          <FaCartPlus />
-        </button>
-      </div>
+      <div key={prod._id} className="product-card" onClick={() => navigate(`/product/${prod._id}`)} style={{ cursor: 'pointer' }}>
+  <img src={prod.image?.[0]} alt={prod.productName} />
+  <h3>{prod.productName}</h3>
+  <p>Seller: {prod.sellerName}</p>
+  <p>₹{prod.price}</p>
+  <button
+    className="icon-cart-btn"
+    onClick={(e) => {
+      e.stopPropagation(); // prevent click from triggering navigation
+      handleAddToCart(prod);
+    }}
+    title="Add to Cart"
+  >
+    <FaCartPlus />
+  </button>
+</div>
+
     ))
   ) : (
     <div className="no-products">No matching products found</div>
