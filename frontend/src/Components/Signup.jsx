@@ -39,6 +39,7 @@ function Signup() {
       localStorage.setItem("token", res.data);         
       localStorage.setItem("Id",res.data.newUser.id);
       localStorage.setItem("email", res.data.email);
+      localStorage.setItem("Name",res.data.newUser.name);
 
       nav("/home");                                 
     }

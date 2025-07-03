@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import './customerhome.css';
 import { FaCartPlus, FaSearch } from 'react-icons/fa';
-
+import ham from '../assets/ham5.png'
 
 function CustomerHome() {
   const navigate = useNavigate();
@@ -14,7 +14,8 @@ function CustomerHome() {
   const[search,setSearch]=useState(false);
   const [recentSearches, setRecentSearches] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-
+  const [name,setName]=useState('');
+  const[profile,setProfile]=useState(false);
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/signin');
@@ -51,6 +52,10 @@ function CustomerHome() {
     })
       .then((res) => {
         setProducts(res.data);
+        
+        const userName=localStorgae.getItem("Name");
+        setName(userName);
+
       })
       .catch((err) => {
         console.error('Error fetching products:', err);
@@ -150,16 +155,29 @@ function CustomerHome() {
             </select>
           </div>
         </div>
+              <div className="header-icons">
+  <button className="cart-button" onClick={handleCartClick}>
+    🛒 Cart ({cart.length})
+  </button>
+  <div className="hamburger-icon" onClick={() => setProfile(!profile)}>
+    <img src={ham} alt="Menu" />
+  </div>
+</div>
+
 
         <div className="header-buttons">
-          <button onClick={handleCartClick}>🛒 Cart ({cart.length})</button>
+         { profile && 
+         <div className="menus">
+           <p>profile</p>
           <button onClick={handleLogout}>Logout</button>
+          </div>
+          }
         </div>
       </div>
 
      <div className="product-grid">
   {(search ? filteredProducts : products).length > 0 ? (
-    (search ? filteredProducts : products).map((prod) => (
+     filteredProducts.map((prod) => (
       <div key={prod._id} className="product-card" onClick={() => navigate(`/product/${prod._id}`)} style={{ cursor: 'pointer' }}>
   <img src={prod.image?.[0]} alt={prod.productName} />
   <h3>{prod.productName}</h3>

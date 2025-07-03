@@ -275,3 +275,78 @@ body {
 .recent-search-dropdown li:hover {
   background-color: #f0f0f0;
 }
+.hamburger-icon {
+  display: block; /* hidden on large screens */
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.hamburger-icon:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.hamburger-icon img {
+  width: 40px;
+  height: 40px;
+}
+@media (max-width: 768px) {
+  .hamburger-icon {
+    display: block;
+  }
+}
+.cart-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 1rem;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.cart-button:hover {
+  background-color: #e68a00;
+}
+.header-buttons > div {
+  background-color: white;
+  color: black;
+  border-radius: 8px;
+  padding: 10px 15px;
+  position: absolute;
+  top: 70px;
+  right: 30px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+
+.header-buttons p {
+  margin: 0 0 10px 0;
+  font-weight: 600;
+  cursor:pointer;
+}
+.header-icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: absolute;
+  top: 20px;
+  right: 30px;
+}
+@media (max-width: 768px) {
+  .cart-button {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  .hamburger-icon img {
+    width: 28px;
+    height: 28px;
+  }
+}
