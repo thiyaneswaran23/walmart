@@ -73,10 +73,6 @@ function OrderPage() {
   userName,
   rating,
   comment,
-}, {
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
 });
 
 
@@ -91,6 +87,8 @@ function OrderPage() {
                 [productId]: response.data.message || 'Error submitting review.',
             }));
         }
+        console.log("Submitting review:", { productId, rating, comment });
+
     } catch (error) {
         console.error('Review error:', error);
         const errorMessage = error.response?.data?.message || 'Failed to submit review.';
@@ -156,39 +154,39 @@ function OrderPage() {
                                         className="review-toggle-btn"
                                         onClick={() =>
                                             setActiveReviewProductId((prev) =>
-                                                prev === item._id ? null : item._id
+                                                prev === item.productId ? null : item.productId
                                             )
                                         }
                                     >
-                                        {activeReviewProductId === item._id
+                                        {activeReviewProductId === item.productId
                                             ? 'Cancel Review'
                                             : 'Leave a Review'}
                                     </button>
 
-                                    {activeReviewProductId === item._id && (
+                                    {activeReviewProductId === item.productId && (
                                         <div className="review-form">
                                             <label>Rating:</label>
-                                            {renderStars(item._id)}
+                                            {renderStars(item.productId)}
                                             <label>Comment:</label>
                                             <textarea
                                                 placeholder="Write your review..."
-                                                value={reviewText[item._id] || ''}
+                                                value={reviewText[item.productId] || ''}
                                                 onChange={(e) =>
                                                     setReviewText((prev) => ({
                                                         ...prev,
-                                                        [item._id]: e.target.value,
+                                                        [item.productId]: e.target.value,
                                                     }))
                                                 }
                                             />
                                             <button
                                                 onClick={() =>
-                                                    handleSubmitReview(item._id)
+                                                    handleSubmitReview(item.productId)
                                                 }
                                             >
                                                 Submit Review
                                             </button>
-                                            {messages[item._id] && (
-                                                <p className="review-message">{messages[item._id]}</p>
+                                            {messages[item.productId] && (
+                                                <p className="review-message">{messages[item.productId]}</p>
                                             )}
                                         </div>
                                     )}

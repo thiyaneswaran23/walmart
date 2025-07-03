@@ -4,6 +4,7 @@ const upload = require('../storage/multerConfig');
 const Products = require('../models/productSchema');
 const Search = require('../models/searchShema'); 
 const verifyToken = require('../middleware/verifyToken'); 
+const cart=require('../models/cartSchema.js')
 router.post('/products', verifyToken, upload.single('image'), async (req, res) => {
   try {
     const product = new Products({
@@ -81,7 +82,7 @@ router.get('/recent-searches/:id', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-router.post('/review/:id', verifyToken, async (req, res) => {
+router.post('/review/:id', async (req, res) => {
   const { userId, userName, rating, comment } = req.body;
 
   if (!userId || !userName || !rating || !comment) {

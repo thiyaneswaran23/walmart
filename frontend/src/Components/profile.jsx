@@ -55,6 +55,7 @@ function Profile() {
       }
     } catch (err) {
       console.error(err);
+      console.log(token);
       setSuccess('❌ Failed to update profile.');
     }
   };

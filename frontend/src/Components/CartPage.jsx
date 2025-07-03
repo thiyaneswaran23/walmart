@@ -18,6 +18,7 @@ const navigate = useNavigate();
                 
                 }));
                 setCartItems(itemsWithQuantity);
+                console.log(itemsWithQuantity);
             } catch (err) {
                 console.log(err);
             }

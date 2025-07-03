@@ -31,7 +31,7 @@ function CustomerHome() {
     if (!alreadyInCart) {
       setCart([...cart, product]);
       const id = localStorage.getItem("Id");
-      axios.post("http://localhost:5000/api/cart/cartItems", { ...product, id: id })
+      axios.post("http://localhost:5000/api/cart/cartItems", { ...product, id: id,productId:product._id })
         .then((res) => {
           console.log(res.data);
           alert(res.data.message);
