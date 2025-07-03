@@ -78,10 +78,10 @@ router.post("/seller/signup", async (req, res) => {
     return res.status(200).json({
   token,
   seller: {
-    id: seller._id,
-    Name: seller.name,
-    email: seller.email,
-    Gender: seller.gender
+    id: newSeller._id,
+    Name: newSeller.name,
+    email: newSeller.email,
+    Gender: newSeller.gender
   }
 });
 
