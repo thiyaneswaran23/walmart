@@ -168,7 +168,7 @@ function CustomerHome() {
         <div className="header-buttons">
          { profile && 
          <div className="menus">
-           <p>profile</p>
+           <p onClick={()=>navigate('/profile')}>profile</p>
           <button onClick={handleLogout}>Logout</button>
           </div>
           }

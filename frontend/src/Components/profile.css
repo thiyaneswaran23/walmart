@@ -1,0 +1,62 @@
+/* Reset and base styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f6f8;
+}
+
+/* Center the profile card */
+.profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Profile card styling */
+.profile-card {
+  background-color: #ffffff;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  width: 360px;
+  text-align: center;
+}
+
+/* Heading */
+.profile-card h2 {
+  color: #2c3e50;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+}
+
+/* Info text */
+.profile-card p {
+  color: #555;
+  font-size: 1rem;
+  margin: 10px 0;
+}
+
+/* Highlighted value */
+.profile-card p span {
+  font-weight: 600;
+  color: #1a73e8;
+}
+
+/* Home button */
+.profile-card button {
+  margin-top: 25px;
+  padding: 10px 20px;
+  background-color: #1a73e8;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.profile-card button:hover {
+  background-color: #155ac1;
+}
