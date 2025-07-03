@@ -36,7 +36,7 @@ function Signup() {
 
     if (res.data) 
     {
-      localStorage.setItem("token", res.data);         
+      localStorage.setItem("token", res.data.token);         
       localStorage.setItem("Id",res.data.newUser.id);
       localStorage.setItem("email", res.data.newUser.email);
       localStorage.setItem("Name",res.data.newUser.name);

@@ -57,43 +57,64 @@ function OrderPage() {
         }
     };
 
-  const handleSubmitReview = async (productId) => {
-    const rating = ratings[productId];
-    const comment = reviewText[productId];
+ const handleSubmitReview = async (productId) => {
+  const rating = ratings[productId];
+  const comment = reviewText[productId];
 
-    if (!rating || !comment) {
-        setMessages((prev) => ({ ...prev, [productId]: 'Please provide both rating and comment.' }));
-        return;
+  // Basic validation
+  if (!rating || !comment) {
+    setMessages((prev) => ({
+      ...prev,
+      [productId]: '❗ Please provide both rating and comment.',
+    }));
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('Id');      
+    const userName = localStorage.getItem('Name');     
+
+    const response = await axios.post(
+      `http://localhost:5000/api/pro/review/${productId}`,
+      {
+        userId,
+        userName,
+        rating,
+        comment,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.status === 200 || response.status === 201) {
+      setMessages((prev) => ({
+        ...prev,
+        [productId]: 'Review submitted successfully!',
+      }));
+      setReviewText((prev) => ({ ...prev, [productId]: '' }));
+      setRatings((prev) => ({ ...prev, [productId]: '' }));
+      setActiveReviewProductId(null);
+    } else {
+      setMessages((prev) => ({
+        ...prev,
+        [productId]: response.data.message || 'Error submitting review.',
+      }));
     }
 
-    try {
-        const token = localStorage.getItem('token');
-      const response = await axios.post(`http://localhost:5000/api/pro/review/${productId}`, {
-  userId,
-  userName,
-  rating,
-  comment,
-});
+    console.log("Submitting review:", { productId, rating, comment });
 
-
-        if (response.status === 200 || response.status === 201) {
-            setMessages((prev) => ({ ...prev, [productId]: 'Review submitted successfully!' }));
-            setReviewText((prev) => ({ ...prev, [productId]: '' }));
-            setRatings((prev) => ({ ...prev, [productId]: '' }));
-            setActiveReviewProductId(null);
-        } else {
-            setMessages((prev) => ({
-                ...prev,
-                [productId]: response.data.message || 'Error submitting review.',
-            }));
-        }
-        console.log("Submitting review:", { productId, rating, comment });
-
-    } catch (error) {
-        console.error('Review error:', error);
-        const errorMessage = error.response?.data?.message || 'Failed to submit review.';
-        setMessages((prev) => ({ ...prev, [productId]: errorMessage }));
-    }
+  } catch (error) {
+    console.error('Review error:', error);
+    const errorMessage = error.response?.data?.message || 'Failed to submit review.';
+    setMessages((prev) => ({
+      ...prev,
+      [productId]: errorMessage,
+    }));
+  }
 };
 
 

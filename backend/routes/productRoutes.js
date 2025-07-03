@@ -82,10 +82,12 @@ router.get('/recent-searches/:id', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-router.post('/review/:id', async (req, res) => {
+router.post('/review/:id', verifyToken, async (req, res) => {
   const { userId, userName, rating, comment } = req.body;
 
   if (!userId || !userName || !rating || !comment) {
+    console.log(userId);
+    console.log(userName);
     return res.status(400).json({ message: 'All fields are required' });
   }
 

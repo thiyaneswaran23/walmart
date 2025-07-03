@@ -18,7 +18,8 @@ const cart=require('./routes/cartRoutes.js');
 app.use('/api/cart',cart);
 const profile=require('./routes/profileRoutes.js');
 app.use('/api/profile',profile);
-
+const Seller=require('./routes/sellerProfileRoutes.js');
+app.use('/ap/profile',Seller);
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     app.listen(5000, () => {

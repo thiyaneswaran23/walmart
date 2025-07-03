@@ -11,7 +11,7 @@ function Profile() {
   const [dob, setDob] = useState('');
   const [address, setAddress] = useState('');
   const [success, setSuccess] = useState('');
-  const [isEditing, setIsEditing] = useState(true); // Initially editable
+  const [isEditing, setIsEditing] = useState(true); 
 
   const nav = useNavigate();
 
@@ -51,7 +51,7 @@ function Profile() {
         localStorage.setItem('dob', dob);
         localStorage.setItem('address', address);
         setSuccess('✅ Profile updated successfully!');
-        setIsEditing(false); // Disable editing after save
+        setIsEditing(false); 
       }
     } catch (err) {
       console.error(err);

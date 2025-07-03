@@ -7,5 +7,7 @@ const sellerSchema = new mongoose.Schema({
   gender: String,
   email: { type: String, unique: true },
   password: String,
+   dob: String,      
+  address: String,
 });
 module.exports = mongoose.model('Seller', sellerSchema);

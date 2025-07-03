@@ -273,3 +273,16 @@
   font-style: italic;
   color: #777;
 }
+.go-to-cart-btn {
+  margin-left: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.go-to-cart-btn:hover {
+  background-color: #45a049;
+}

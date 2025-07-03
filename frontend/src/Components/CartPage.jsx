@@ -97,7 +97,7 @@ const navigate = useNavigate();
                     <span>Total</span>
                     <span>${total.toFixed(2)}</span>
                 </div>
-                <input type="text" placeholder="Enter discount code" className="discount-input" />
+               
                 
 
  <button

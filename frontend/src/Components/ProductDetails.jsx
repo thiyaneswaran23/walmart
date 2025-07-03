@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import './ProductDetails.css';
+import { useNavigate } from 'react-router-dom';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -10,7 +11,7 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [addedMessage, setAddedMessage] = useState('');
   const [loading, setLoading] = useState(true);
-
+  const navigate=useNavigate();
   const userId = localStorage.getItem("Id");
 
   useEffect(() => {
@@ -99,17 +100,20 @@ const ProductDetails = () => {
           <p className="price">₹{product.price}</p>
           <p className="desc">{product.description || "No description available."}</p>
 
-          <div className="quantity-cart">
-            <label htmlFor="qty">Qty:</label>
-            <input
-              id="qty"
-              type="number"
-              min="1"
-              value={quantity}
-              onChange={(e) => setQuantity(Number(e.target.value))}
-            />
-            <button onClick={handleAddToCart}>🛒 Add to Cart</button>
-          </div>
+         <div className="quantity-cart">
+  <label htmlFor="qty">Qty:</label>
+  <input
+    id="qty"
+    type="number"
+    min="1"
+    value={quantity}
+    onChange={(e) => setQuantity(Number(e.target.value))}
+  />
+  <button onClick={handleAddToCart}>🛒 Add to Cart</button>
+  <button onClick={() => navigate('/cart')} className="go-to-cart-btn">🧺 Go to Cart</button>
+</div>
+
+
 
           {addedMessage && <p className="cart-message">{addedMessage}</p>}
         </div>

@@ -59,54 +59,67 @@ router.post('/signin', async (req, res) => {
   }
 });
 
-router.post("/seller/signup", async (req,res)=>{
-  const{name,gender,email,password}=req.body;
-  try{
-    const existingSeller= await Seller.findOne({email});
-    if(existingSeller)
-    {
-      return res.status(400).json({message:"user already exists"})
+
+router.post("/seller/signup", async (req, res) => {
+  const { name, gender, email, password } = req.body;
+  try {
+    const existingSeller = await Seller.findOne({ email });
+    if (existingSeller) {
+      return res.status(400).json({ message: "User already exists" });
     }
 
-    const hashed= await bcrypt.hash(password,10);
+    const hashed = await bcrypt.hash(password, 10);
 
-    const newSeller= new Seller({name,gender,email,password:hashed});
+    const newSeller = new Seller({ name, gender, email, password: hashed });
     await newSeller.save();
 
-    const token=jwt.sign({id:newSeller._id},process.env.JWT_SECRET,{expiresIn:"1h"});
+    const token = jwt.sign({ id: newSeller._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-   return res.status(200).json({ token });
-
+    return res.status(200).json({
+  token,
+  seller: {
+    id: seller._id,
+    Name: seller.name,
+    email: seller.email,
+    Gender: seller.gender
   }
-  catch(err)
-  {
-     res.status(500).json({message:err.message});
+});
+
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-}
-)
+});
 
-router.post("/seller/signin", async (req,res)=>{
-  const{email,password}=req.body;
+router.post("/seller/signin", async (req, res) => {
+  const { email, password } = req.body;
 
-  try{
-    const seller=await Seller.findOne({email});
-    if(!seller)
-    {
-      return res.status(400).json({message:"Invalid email or Password"});
+  try {
+    const seller = await Seller.findOne({ email });
+    if (!seller) {
+      return res.status(400).json({ message: "Invalid email or Password" });
     }
-    const valid= await bcrypt.compare(password,seller.password);
-    if(!valid)
-    {
-      return res.status(400).json({message:"Incorrect Password"});
+
+    const valid = await bcrypt.compare(password, seller.password);
+    if (!valid) {
+      return res.status(400).json({ message: "Incorrect Password" });
     }
 
-    const token=jwt.sign({id:seller._id},process.env.JWT_SECRET,{expiresIn:"1h"});
-   return res.status(200).json({ token });
+    const token = jwt.sign({ id: seller._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
+    return res.status(200).json({
+      token,
+      seller: {
+        id: seller._id,
+        Name: seller.name,
+        email: seller.email,
+        Gender: seller.gender
+      }
+    });
+
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
-  catch(err){
-      res.status(400).json({message:err.message});
-  }
-})
+});
 
 module.exports = router;
