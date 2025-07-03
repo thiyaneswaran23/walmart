@@ -14,7 +14,7 @@ function CustomerHome() {
   const[search,setSearch]=useState(false);
   const [recentSearches, setRecentSearches] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [name,setName]=useState('');
+ 
   const[profile,setProfile]=useState(false);
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -53,8 +53,8 @@ function CustomerHome() {
       .then((res) => {
         setProducts(res.data);
         
-        const userName=localStorgae.getItem("Name");
-        setName(userName);
+      
+        
 
       })
       .catch((err) => {
@@ -166,12 +166,17 @@ function CustomerHome() {
 
 
         <div className="header-buttons">
-         { profile && 
-         <div className="menus">
-           <p onClick={()=>navigate('/profile')}>profile</p>
-          <button onClick={handleLogout}>Logout</button>
-          </div>
-          }
+       {profile && (
+  <div className="profile-dropdown">
+    <button className="profile-option" onClick={() => navigate('/profile')}>
+      👤 Profile
+    </button>
+    <button className="profile-option logout-btn" onClick={handleLogout}>
+      🔓 Logout
+    </button>
+  </div>
+)}
+
         </div>
       </div>
 

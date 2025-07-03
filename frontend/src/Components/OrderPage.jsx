@@ -2,21 +2,46 @@ import './Cart.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function OrderPage() {
     const navigate = useNavigate();
     const { state } = useLocation();
 
-    const cartItems = state?.cartItems;
-    const subtotal = state?.subtotal;
-    const discount = state?.discount;
-    const total = state?.total;
+    const cartItems = state?.cartItems || [];
+    const subtotal = parseFloat(state?.subtotal || 0);
+    const discount = parseFloat(state?.discount || 0);
+    const total = parseFloat(state?.total || 0);
+
+    const [userName, setUserName] = useState('N/A');
+    const [userEmail, setUserEmail] = useState('N/A');
+    const [userAddress, setUserAddress] = useState('N/A');
+    const [userId, setUserId] = useState(null);
+
+    const [reviewText, setReviewText] = useState({});
+    const [ratings, setRatings] = useState({});
+    const [messages, setMessages] = useState({});
+    const [activeReviewProductId, setActiveReviewProductId] = useState(null);
+
+    useEffect(() => {
+        setUserName(localStorage.getItem('Name') || 'N/A');
+        setUserEmail(localStorage.getItem('email') || 'N/A');
+        setUserAddress(localStorage.getItem('address') || 'N/A');
+        setUserId(localStorage.getItem('Id'));
+    }, []);
+
     const handleBackToCart = () => {
         navigate('/cart');
     };
 
     const generatePDF = async () => {
         const input = document.getElementById('receipt');
+        if (!input) {
+            alert('Receipt element not found.');
+            return;
+        }
+
         try {
             const canvas = await html2canvas(input, { scale: 2, useCORS: true });
             const imgData = canvas.toDataURL('image/png');
@@ -32,6 +57,69 @@ function OrderPage() {
         }
     };
 
+  const handleSubmitReview = async (productId) => {
+    const rating = ratings[productId];
+    const comment = reviewText[productId];
+
+    if (!rating || !comment) {
+        setMessages((prev) => ({ ...prev, [productId]: 'Please provide both rating and comment.' }));
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem('token');
+      const response = await axios.post(`http://localhost:5000/api/pro/review/${productId}`, {
+  userId,
+  userName,
+  rating,
+  comment,
+}, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
+
+
+        if (response.status === 200 || response.status === 201) {
+            setMessages((prev) => ({ ...prev, [productId]: 'Review submitted successfully!' }));
+            setReviewText((prev) => ({ ...prev, [productId]: '' }));
+            setRatings((prev) => ({ ...prev, [productId]: '' }));
+            setActiveReviewProductId(null);
+        } else {
+            setMessages((prev) => ({
+                ...prev,
+                [productId]: response.data.message || 'Error submitting review.',
+            }));
+        }
+    } catch (error) {
+        console.error('Review error:', error);
+        const errorMessage = error.response?.data?.message || 'Failed to submit review.';
+        setMessages((prev) => ({ ...prev, [productId]: errorMessage }));
+    }
+};
+
+
+    const handleStarClick = (productId, starValue) => {
+        setRatings((prev) => ({ ...prev, [productId]: starValue }));
+    };
+
+    const renderStars = (productId) => {
+        const selectedRating = ratings[productId] || 0;
+        return (
+            <div className="star-rating">
+                {[1, 2, 3, 4, 5].map((star) => (
+                    <span
+                        key={star}
+                        className={star <= selectedRating ? 'star selected' : 'star'}
+                        onClick={() => handleStarClick(productId, star)}
+                    >
+                        ★
+                    </span>
+                ))}
+            </div>
+        );
+    };
+
     return (
         <>
             <div id="receipt" className="cart-container">
@@ -39,6 +127,11 @@ function OrderPage() {
                     <h2>Order Confirmation</h2>
                     <p>Thank you for your purchase!</p>
                     <p>Your order has been placed successfully.</p>
+
+                    <h3>Customer Details</h3>
+                    <p><strong>Name:</strong> {userName}</p>
+                    <p><strong>Email:</strong> {userEmail}</p>
+                    <p><strong>Delivery Address:</strong> {userAddress}</p>
 
                     <h3>Order Receipt</h3>
                     {cartItems.length === 0 ? (
@@ -48,7 +141,7 @@ function OrderPage() {
                             {cartItems.map((item, index) => (
                                 <div key={index} className="cart-card">
                                     <img
-                                        src={item.image[0]}
+                                        src={item.image?.[0] || ''}
                                         alt={item.productName}
                                         crossOrigin="anonymous"
                                     />
@@ -58,6 +151,47 @@ function OrderPage() {
                                         <p>Quantity: {item.quantity}</p>
                                         <p>Total: ${(item.price * item.quantity).toFixed(2)}</p>
                                     </div>
+
+                                    <button
+                                        className="review-toggle-btn"
+                                        onClick={() =>
+                                            setActiveReviewProductId((prev) =>
+                                                prev === item._id ? null : item._id
+                                            )
+                                        }
+                                    >
+                                        {activeReviewProductId === item._id
+                                            ? 'Cancel Review'
+                                            : 'Leave a Review'}
+                                    </button>
+
+                                    {activeReviewProductId === item._id && (
+                                        <div className="review-form">
+                                            <label>Rating:</label>
+                                            {renderStars(item._id)}
+                                            <label>Comment:</label>
+                                            <textarea
+                                                placeholder="Write your review..."
+                                                value={reviewText[item._id] || ''}
+                                                onChange={(e) =>
+                                                    setReviewText((prev) => ({
+                                                        ...prev,
+                                                        [item._id]: e.target.value,
+                                                    }))
+                                                }
+                                            />
+                                            <button
+                                                onClick={() =>
+                                                    handleSubmitReview(item._id)
+                                                }
+                                            >
+                                                Submit Review
+                                            </button>
+                                            {messages[item._id] && (
+                                                <p className="review-message">{messages[item._id]}</p>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -84,8 +218,12 @@ function OrderPage() {
             </div>
 
             <div className="button-group">
-                <button className="checkout-btn" onClick={handleBackToCart}>Back to Cart</button>
-                <button className="checkout-btn" onClick={generatePDF}>Download PDF Receipt</button>
+                <button className="checkout-btn" onClick={handleBackToCart}>
+                    Back to Cart
+                </button>
+                <button className="checkout-btn" onClick={generatePDF}>
+                    Download PDF Receipt
+                </button>
             </div>
         </>
     );

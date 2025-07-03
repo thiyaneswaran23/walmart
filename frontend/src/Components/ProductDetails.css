@@ -1,0 +1,275 @@
+.product-details-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 30px;
+  font-family: Arial, sans-serif;
+}
+
+.loading {
+  font-size: 20px;
+  text-align: center;
+  padding: 50px;
+}
+
+.product-main {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.product-image img {
+  width: 350px;
+  height: 350px;
+  object-fit: contain;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.product-info {
+  flex: 1;
+  min-width: 300px;
+}
+
+.product-info h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.price {
+  color: green;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.seller {
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.desc {
+  margin: 20px 0;
+  line-height: 1.5;
+}
+
+.quantity-cart {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.quantity-cart input {
+  width: 60px;
+  padding: 6px;
+}
+
+.quantity-cart button {
+  background: #ff6f00;
+  border: none;
+  padding: 10px 20px;
+  color: white;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.quantity-cart button:hover {
+  background: #e65c00;
+}
+
+.cart-message {
+  margin-top: 10px;
+  color: green;
+  font-weight: bold;
+}
+
+.recommended-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.recommended-card {
+  width: 200px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background: white;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.recommended-card:hover {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.recommended-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.recommended-card h4 {
+  font-size: 16px;
+  margin: 5px 0;
+}
+
+.recommended-card .price {
+  color: green;
+  font-weight: bold;
+}
+.product-header {
+  padding: 20px;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #ddd;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.back-btn {
+  background-color: transparent;
+  border: none;
+  color: #007bff;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 5px;
+  padding: 0;
+}
+
+.back-btn:hover {
+  text-decoration: underline;
+}
+
+.product-header h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+.product-header-enhanced {
+  padding: 20px;
+  background: linear-gradient(135deg, #e0f7fa, #fce4ec);
+  border-bottom: 1px solid #ddd;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.back-btn {
+  background-color: transparent;
+  border: none;
+  color: #007bff;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  margin-right: 5px;
+}
+
+.back-btn:hover {
+  text-decoration: underline;
+}
+
+.product-header-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.product-header-image {
+  width: 140px;
+  height: 140px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border: 2px solid #fff;
+}
+
+.product-header-text {
+  flex: 1;
+}
+
+.product-header-text h1 {
+  margin: 0;
+  font-size: 28px;
+  color: #333;
+}
+
+.product-header-text .price {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ff5722;
+  margin: 8px 0;
+}
+
+.product-header-text .short-desc {
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.category-badge {
+  background-color: #2196f3;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  display: inline-block;
+}
+/* Reviews Section */
+.product-reviews {
+  margin-top: 2rem;
+  padding: 1rem;
+  border-top: 2px solid #e0e0e0;
+}
+
+.review-card {
+  background-color: #fff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.username {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+}
+
+.rating {
+  font-size: 1rem;
+  color: #ff9529; /* Star yellow */
+}
+
+.stars {
+  font-size: 1rem;
+}
+
+.comment {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: #444;
+}
+
+.no-review {
+  font-style: italic;
+  color: #777;
+}

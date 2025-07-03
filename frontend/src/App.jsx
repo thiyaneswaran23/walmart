@@ -8,7 +8,7 @@ import PrivateRoute from './Components/PrivateRoute';
 import Cart from './Components/CartPage';
 import OrderPage from './Components/OrderPage';
 import ProductDetails from './Components/ProductDetails';
-import Profile from './Components/profile';
+import Profile from './Components/Profile';
 function App() {
   
 

@@ -15,7 +15,7 @@ const navigate = useNavigate();
             
                 const itemsWithQuantity = res.data.map(item => ({
                     ...item,
-                    quantity: 1
+                
                 }));
                 setCartItems(itemsWithQuantity);
             } catch (err) {

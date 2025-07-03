@@ -81,6 +81,48 @@ router.get('/recent-searches/:id', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+router.post('/review/:id', verifyToken, async (req, res) => {
+  const { userId, userName, rating, comment } = req.body;
+
+  if (!userId || !userName || !rating || !comment) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    const product = await Products.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    const alreadyReviewed = product.reviews?.some(
+      (review) => review.userId === userId
+    );
+    if (alreadyReviewed) {
+      return res.status(400).json({ message: 'You have already reviewed this product' });
+    }
+
+    const review = {
+      userId,
+      userName,
+      rating: Number(rating),
+      comment,
+    };
+
+    product.reviews = product.reviews || [];
+    product.reviews.push(review);
+
+    product.numReviews = product.reviews.length;
+    product.averageRating =
+      product.reviews.reduce((acc, r) => acc + r.rating, 0) / product.numReviews;
+
+    await product.save();
+
+    res.status(201).json({ message: 'Review submitted successfully' });
+  } catch (err) {
+    console.error('Review submission error:', err);
+    res.status(500).json({ message: 'Server error while submitting review' });
+  }
+});
 
 
 module.exports = router;

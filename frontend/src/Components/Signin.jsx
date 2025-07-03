@@ -14,10 +14,11 @@ function Signin() {
         email,
         password
       });
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem("Id",res.data.user.id);
-      localStorage.setItem("email", res.data.email);
-
+   localStorage.setItem('token', res.data.token);
+    localStorage.setItem('Id', res.data.user.id);
+    localStorage.setItem('email', res.data.user.email);
+    localStorage.setItem('gender', res.data.user.gender);
+    localStorage.setItem('Name', res.data.user.name);
       nav("/home");
     } catch (err) {
       alert(err.response?.data?.message || "Login failed");
