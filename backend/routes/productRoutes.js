@@ -126,6 +126,37 @@ router.post('/review/:id', verifyToken, async (req, res) => {
     res.status(500).json({ message: 'Server error while submitting review' });
   }
 });
+// GET unique seller names
+router.get('/unique-sellers', async (req, res) => {
+  try {
+    const sellers = await Products.distinct('sellerName');
+    res.status(200).json(sellers);
+  } catch (err) {
+    console.error('Error fetching unique sellers:', err);
+    res.status(500).json({ error: 'Failed to fetch sellers' });
+  }
+});
+
+// GET products by seller name (case-insensitive)
+router.get('/products-by-seller/:sellerName', async (req, res) => {
+  try {
+    const sellerName = req.params.sellerName;
+
+    const products = await Products.find({
+      sellerName: { $regex: new RegExp(`^${sellerName}$`, 'i') } // Case-insensitive exact match
+    });
+
+    if (!products.length) {
+      return res.status(404).json({ message: 'No products found for this seller' });
+    }
+
+    res.status(200).json(products);
+  } catch (err) {
+    console.error('Error fetching products by seller:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 
 module.exports = router;
