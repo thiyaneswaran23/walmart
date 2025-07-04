@@ -136,7 +136,7 @@ body {
   gap: 8px;
   padding: 10px 14px;
   font-size: 1rem;
-  background-color: #10b981;
+  background-color: #1355ef;
   color: white;
   border: none;
   border-radius: 8px;
@@ -153,7 +153,7 @@ body {
   width: 40px;
   height: 40px;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 50%;
 }
 
 /* Profile Dropdown */
