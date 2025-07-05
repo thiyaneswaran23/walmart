@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './customerhome.css';
 import { FaCartPlus, FaSearch } from 'react-icons/fa';
 import ham from '../assets/ham5.png';
@@ -16,15 +16,37 @@ function CustomerHome() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [sellers, setSellers] = useState([]);
   const [profile, setProfile] = useState(false);
+  const recognitionRef = useRef(null);
+
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'en-IN';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setSearchTerm(transcript);
+        setSearch(true);
+        handleSetSearch();
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+      };
+
+      recognitionRef.current = recognition;
+    } else {
+      console.warn('SpeechRecognition API not supported in this browser.');
+    }
+  }, []);
 
   useEffect(() => {
     axios.get('http://localhost:5000/api/pro/unique-sellers')
-      .then(res => {
-        setSellers(res.data);
-      })
-      .catch(err => {
-        console.error('Error fetching sellers:', err);
-      });
+      .then(res => setSellers(res.data))
+      .catch(err => console.error('Error fetching sellers:', err));
   }, []);
 
   const handleLogout = () => {
@@ -41,10 +63,8 @@ function CustomerHome() {
     if (!alreadyInCart) {
       setCart([...cart, product]);
       const id = localStorage.getItem("Id");
-      axios.post("http://localhost:5000/api/cart/cartItems", { ...product, id: id, productId: product._id })
-        .then((res) => {
-          alert(res.data.message);
-        })
+      axios.post("http://localhost:5000/api/cart/cartItems", { ...product, id, productId: product._id })
+        .then((res) => alert(res.data.message))
         .catch(err => console.log(err));
     } else {
       alert('Product already in cart');
@@ -54,30 +74,18 @@ function CustomerHome() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     axios.get('http://localhost:5000/api/pro/all-products', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => {
-        setProducts(res.data);
-      })
-      .catch((err) => {
-        console.error('Error fetching products:', err);
-      });
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.error('Error fetching products:', err));
   }, []);
 
   const filteredProducts = products
-    .filter((product) =>
-      product.productName.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    .filter((product) => product.productName.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => {
-      if (sortOrder === 'lowToHigh') {
-        return a.price - b.price;
-      } else if (sortOrder === 'highToLow') {
-        return b.price - a.price;
-      } else {
-        return 0;
-      }
+      if (sortOrder === 'lowToHigh') return a.price - b.price;
+      if (sortOrder === 'highToLow') return b.price - a.price;
+      return 0;
     });
 
   useEffect(() => {
@@ -91,10 +99,8 @@ function CustomerHome() {
     setSearch(true);
     setShowDropdown(false);
     const id = localStorage.getItem("Id");
-    axios.post("http://localhost:5000/api/pro/search", { searchTerm, id: id })
-      .then((res) => {
-        console.log(res.data);
-      })
+    axios.post("http://localhost:5000/api/pro/search", { searchTerm, id })
+      .then((res) => console.log(res.data))
       .catch(err => console.log(err));
   };
 
@@ -142,7 +148,18 @@ function CustomerHome() {
               onChange={(e) => setSearchTerm(e.target.value)}
               onFocus={handleSearchFocus}
             />
-            <button onClick={handleSetSearch} className="search-icon-btn">
+            <button
+              className="voice-btn"
+              onClick={() => recognitionRef.current && recognitionRef.current.start()}
+              title="Voice Search"
+            >
+              🎙️
+            </button>
+            <button
+              className="search-icon-btn"
+              onClick={handleSetSearch}
+              title="Search"
+            >
               <FaSearch />
             </button>
 
@@ -174,10 +191,7 @@ function CustomerHome() {
           </div>
 
           <div className="sort-dropdown">
-            <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-            >
+            <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
               <option value="">Sort by</option>
               <option value="lowToHigh">Low to High</option>
               <option value="highToLow">High to Low</option>
@@ -207,29 +221,45 @@ function CustomerHome() {
       </header>
 
       <main className="product-grid">
-        {(search ? filteredProducts : products).length > 0 ? (
-          (search ? filteredProducts : products).map((prod) => (
-            <div key={prod._id} className="product-card" onClick={() => navigate(`/product/${prod._id}`)}>
-              <img src={prod.image?.[0]} alt={prod.productName} />
-              <h3>{prod.productName}</h3>
-              <p>Seller: {prod.sellerName}</p>
-              <p>₹{prod.price}</p>
-              <button
-                className="icon-cart-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAddToCart(prod);
-                }}
-                title="Add to Cart"
-              >
-                <FaCartPlus />
-              </button>
-            </div>
-          ))
-        ) : (
-          <div className="no-products">No matching products found</div>
-        )}
-      </main>
+  {[...(search ? filteredProducts : products)]
+    .sort((a, b) => {
+      if (sortOrder === 'lowToHigh') return a.price - b.price;
+      if (sortOrder === 'highToLow') return b.price - a.price;
+      return 0;
+    }).length > 0 ? (
+      [...(search ? filteredProducts : products)]
+        .sort((a, b) => {
+          if (sortOrder === 'lowToHigh') return a.price - b.price;
+          if (sortOrder === 'highToLow') return b.price - a.price;
+          return 0;
+        })
+        .map((prod) => (
+          <div
+            key={prod._id}
+            className="product-card"
+            onClick={() => navigate(`/product/${prod._id}`)}
+          >
+            <img src={prod.image?.[0]} alt={prod.productName} />
+            <h3>{prod.productName}</h3>
+            <p>Seller: {prod.sellerName}</p>
+            <p>₹{prod.price}</p>
+            <button
+              className="icon-cart-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAddToCart(prod);
+              }}
+              title="Add to Cart"
+            >
+              <FaCartPlus />
+            </button>
+          </div>
+        ))
+    ) : (
+      <div className="no-products">No matching products found</div>
+    )}
+</main>
+
     </div>
   );
 }

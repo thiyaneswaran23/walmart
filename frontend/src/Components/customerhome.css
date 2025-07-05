@@ -1,4 +1,4 @@
-/* Base Reset */
+/* Reset & Global */
 body {
   margin: 0;
   padding: 0;
@@ -28,7 +28,6 @@ body {
   color: white;
   padding: 20px 30px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
 }
 
 .customer-header h2 {
@@ -37,7 +36,7 @@ body {
   font-weight: 700;
 }
 
-/* Search & Sort */
+/* Search and Filter */
 .search-sort-wrapper {
   display: flex;
   align-items: center;
@@ -47,35 +46,82 @@ body {
 .search-bar {
   position: relative;
   display: flex;
-  width: 250px;
+  align-items: center;
+  width: 100%;
+  max-width: 300px;
+  background-color: #ffffff;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.search-bar:focus-within {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  border-color: #3b82f6;
 }
 
 .search-bar input {
-  padding: 10px 15px;
+  flex: 1;
+  padding: 12px 14px;
   font-size: 1rem;
-  border-radius: 6px 0 0 6px;
-  border: 1px solid #ccc;
-  transition: border-color 0.3s ease;
-}
-
-.search-bar input:focus {
-  border-color: #2563eb;
-  outline: none;
-}
-
-.search-icon-btn {
-  padding: 10px 15px;
-  font-size: 1rem;
-  border-radius: 0 6px 6px 0;
-  background-color: #2563eb;
-  color: white;
   border: none;
+  outline: none;
+  background-color: transparent;
+  color: #111827;
+}
+
+.search-bar input::placeholder {
+  color: #9ca3af;
+}
+
+.voice-btn,
+.search-icon-btn {
+  background-color: transparent;
+  border: none;
+  padding: 10px;
+  font-size: 1.2rem;
+  color: #3b82f6;
   cursor: pointer;
+  display: flex;
+  align-items: center;
   transition: background-color 0.3s ease;
 }
 
+.voice-btn:hover,
 .search-icon-btn:hover {
-  background-color: #1e40af;
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.recent-search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 10;
+  padding: 0;
+  margin: 0;
+}
+
+.recent-search-dropdown li {
+  list-style: none;
+  padding: 12px 14px;
+  cursor: pointer;
+  color: #374151;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s ease;
+}
+
+.recent-search-dropdown li:hover {
+  background-color: #f9fafb;
 }
 
 .seller-filter select,
@@ -92,35 +138,6 @@ body {
 .seller-filter select:focus,
 .sort-dropdown select:focus {
   border-color: #2563eb;
-}
-
-/* Dropdown for Recent Searches */
-.recent-search-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 0 0 8px 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  max-height: 150px;
-  overflow-y: auto;
-  z-index: 10;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.recent-search-dropdown li {
-  padding: 10px;
-  cursor: pointer;
-  color: #333;
-  transition: background-color 0.3s ease;
-}
-
-.recent-search-dropdown li:hover {
-  background-color: #f0f0f0;
 }
 
 /* Header Icons */
@@ -196,10 +213,9 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 30px;
-  margin-top: 80px; /* To avoid overlap with fixed header */
+  margin-top: 20px;
 }
 
-/* Product Card */
 .product-card {
   background-color: white;
   border-radius: 12px;
@@ -232,7 +248,6 @@ body {
   color: #4b5563;
 }
 
-/* Cart Button in Card */
 .icon-cart-btn {
   background-color: #3b82f6;
   color: white;
@@ -252,7 +267,6 @@ body {
   background-color: #2563eb;
 }
 
-/* No Products */
 .no-products {
   grid-column: 1 / -1;
   text-align: center;
@@ -261,7 +275,7 @@ body {
   margin-top: 30px;
 }
 
-/* Responsive Tweaks */
+/* Responsive */
 @media (max-width: 768px) {
   .custom-home-header {
     flex-direction: column;
@@ -282,10 +296,6 @@ body {
   }
 
   .search-bar {
-    width: 100%;
-  }
-
-  .search-sort-wrapper .search-bar input {
     width: 100%;
   }
 }
