@@ -163,7 +163,9 @@ function CustomerHome() {
               <FaSearch />
             </button>
 
-            {showDropdown && recentSearches.length > 0 && (
+          
+          </div>
+           {showDropdown && recentSearches.length > 0 && (
               <ul className="recent-search-dropdown">
                 {recentSearches.map((term, index) => (
                   <li
@@ -179,7 +181,7 @@ function CustomerHome() {
                 ))}
               </ul>
             )}
-          </div>
+        
 
           <div className="seller-filter">
             <select onChange={(e) => fetchBySellerName(e.target.value)}>
