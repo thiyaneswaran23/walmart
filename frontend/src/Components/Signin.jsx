@@ -14,6 +14,7 @@ function Signin() {
         email,
         password
       });
+      
    localStorage.setItem('token', res.data.token);
     localStorage.setItem('Id', res.data.user.id);
     localStorage.setItem('email', res.data.user.email);

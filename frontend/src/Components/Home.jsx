@@ -59,17 +59,28 @@ function CustomerHome() {
   };
 
   const handleAddToCart = async (product) => {
-    const alreadyInCart = cart.some((item) => item._id === product._id);
-    if (!alreadyInCart) {
-      setCart([...cart, product]);
-      const id = localStorage.getItem("Id");
-      axios.post("http://localhost:5000/api/cart/cartItems", { ...product, id, productId: product._id })
-        .then((res) => alert(res.data.message))
-        .catch(err => console.log(err));
-    } else {
-      alert('Product already in cart');
-    }
-  };
+  const alreadyInCart = cart.some((item) => item._id === product._id);
+  if (!alreadyInCart) {
+    setCart([...cart, product]);
+
+    const userId = localStorage.getItem("Id");
+
+    axios.post("http://localhost:5000/api/cart/cartItems", {
+      id: userId,
+      productId: product._id,
+      productName: product.productName,
+      price: product.price,
+      image: product.image,
+      quantity: 1,
+      sellerId: product.sellerId// ✅ include sellerId here
+    })
+      .then((res) => alert(res.data.message))
+      .catch((err) => console.log(err));
+  } else {
+    alert('Product already in cart');
+  }
+};
+
 
   useEffect(() => {
     const token = localStorage.getItem('token');

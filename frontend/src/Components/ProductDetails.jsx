@@ -57,7 +57,9 @@ const ProductDetails = () => {
         price: product.price,
         image: product.image,
         quantity: quantity,
-        productId: product._id
+        productId: product._id,
+        sellerId: product.sellerId
+
       });
 
       setAddedMessage(`✅ Added ${quantity} item(s) to cart.`);

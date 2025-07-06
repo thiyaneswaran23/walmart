@@ -35,6 +35,33 @@ const navigate = useNavigate();
     }
 };
 
+const handleCheckout = async () => {
+  const userId = localStorage.getItem("Id");
+  try {
+    await axios.post(`http://localhost:5000/api/cart/checkout/${userId}`);
+    navigate('/order', {
+      state: {
+        cartItems,
+        subtotal,
+        discount,
+        total
+      }
+    });
+      navigate('/order', {
+                state: {
+                    cartItems,
+                    subtotal,
+                    discount,
+                    total
+                }
+            })
+  } catch (err) {
+    console.error('Checkout failed:', err);
+    alert('Checkout failed');
+  }
+};
+
+
     const handleQuantityChange = (index, newQuantity) => {
         const updatedCart = [...cartItems];
         updatedCart[index].quantity = Number(newQuantity);
@@ -102,16 +129,7 @@ const navigate = useNavigate();
 
  <button
         className="checkout-btn"
-        onClick={() =>
-            navigate('/order', {
-                state: {
-                    cartItems,
-                    subtotal,
-                    discount,
-                    total
-                }
-            })
-        }
+        onClick={()=>handleCheckout() }
     >
         Proceed to Checkout
     </button>
