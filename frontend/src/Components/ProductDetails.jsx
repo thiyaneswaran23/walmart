@@ -1,29 +1,40 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ProductDetails.css';
-import { useNavigate } from 'react-router-dom';
 
 const ProductDetails = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [recommended, setRecommended] = useState([]);
+  const [predictedLabel, setPredictedLabel] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [addedMessage, setAddedMessage] = useState('');
   const [loading, setLoading] = useState(true);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const userId = localStorage.getItem("Id");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetch product details
         const { data } = await axios.get("http://localhost:5000/api/pro/all-products");
         const prod = data.find(p => p._id === id);
         setProduct(prod);
         setLoading(false);
 
+        // Fetch recommendations
         const recRes = await axios.get(`http://localhost:8000/recommend/${id}`);
         setRecommended(recRes.data);
+
+        // Fetch predicted label using product name
+        if (prod?.productName) {
+          const labelRes = await axios.post("http://localhost:8000/predict-label", {
+            productName: prod.productName
+          });
+          setPredictedLabel(labelRes.data.predictedLabel);
+        }
+
       } catch (err) {
         console.error("Error fetching data:", err);
         setLoading(false);
@@ -46,7 +57,7 @@ const ProductDetails = () => {
         price: product.price,
         image: product.image,
         quantity: quantity,
-        productId:product._id
+        productId: product._id
       });
 
       setAddedMessage(`✅ Added ${quantity} item(s) to cart.`);
@@ -66,7 +77,7 @@ const ProductDetails = () => {
     );
   };
 
-  if (loading) return <div className="loading">Loading product details...</div>;
+  if (loading || !product) return <div className="loading">Loading product details...</div>;
 
   return (
     <div className="product-details-container">
@@ -84,7 +95,9 @@ const ProductDetails = () => {
             <h1>{product.productName}</h1>
             <p className="price">₹{product.price}</p>
             <p className="short-desc">{product.description?.substring(0, 100) || "No description available."}</p>
-            <span className="category-badge">{product.category || "General"}</span>
+            <span className="category-badge">{predictedLabel || "General"}</span>
+           
+            
           </div>
         </div>
       </div>
@@ -100,20 +113,18 @@ const ProductDetails = () => {
           <p className="price">₹{product.price}</p>
           <p className="desc">{product.description || "No description available."}</p>
 
-         <div className="quantity-cart">
-  <label htmlFor="qty">Qty:</label>
-  <input
-    id="qty"
-    type="number"
-    min="1"
-    value={quantity}
-    onChange={(e) => setQuantity(Number(e.target.value))}
-  />
-  <button onClick={handleAddToCart}>🛒 Add to Cart</button>
-  <button onClick={() => navigate('/cart')} className="go-to-cart-btn">🧺 Go to Cart</button>
-</div>
-
-
+          <div className="quantity-cart">
+            <label htmlFor="qty">Qty:</label>
+            <input
+              id="qty"
+              type="number"
+              min="1"
+              value={quantity}
+              onChange={(e) => setQuantity(Number(e.target.value))}
+            />
+            <button onClick={handleAddToCart}>🛒 Add to Cart</button>
+            <button onClick={() => navigate('/cart')} className="go-to-cart-btn">🧺 Go to Cart</button>
+          </div>
 
           {addedMessage && <p className="cart-message">{addedMessage}</p>}
         </div>
