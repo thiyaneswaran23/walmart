@@ -11,8 +11,43 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [addedMessage, setAddedMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [messages, setMessages] = useState([]);
+const [newMessage, setNewMessage] = useState('');
   const navigate = useNavigate();
   const userId = localStorage.getItem("Id");
+
+useEffect(() => {
+  const fetchMessages = async () => {
+    try {
+      const { data } = await axios.get(`http://localhost:5000/api/messages/${userId}/${product.sellerId}/${id}`);
+      setMessages(data);
+    } catch (err) {
+      console.error('Error fetching messages:', err);
+    }
+  };
+
+  if (product && userId) {
+    fetchMessages();
+  }
+}, [product, id, userId]);
+
+const handleSendMessage = async () => {
+  if (!newMessage.trim()) return;
+  try {
+    const { data } = await axios.post('http://localhost:5000/api/messages', {
+      senderId: userId,
+      receiverId: product.sellerId,
+      productId: id,
+      message: newMessage
+    });
+    setMessages((prev) => [...prev, data]);
+    setNewMessage('');
+  } catch (err) {
+    console.error('Error sending message:', err);
+  }
+};
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -131,6 +166,26 @@ const ProductDetails = () => {
           {addedMessage && <p className="cart-message">{addedMessage}</p>}
         </div>
       </div>
+
+      <div className="chat-section">
+  <h3>💬 Message Seller</h3>
+  <textarea
+    rows="3"
+    value={newMessage}
+    onChange={(e) => setNewMessage(e.target.value)}
+    placeholder="Ask something about the product..."
+  />
+  <button onClick={handleSendMessage}>Send Message</button>
+  <div className="chat-history">
+    {messages.map((msg, idx) => (
+      <div key={idx} className={`chat-bubble ${msg.senderId === userId ? 'buyer' : 'seller'}`}>
+        <p>{msg.message}</p>
+        <small>{new Date(msg.timestamp).toLocaleString()}</small>
+      </div>
+    ))}
+  </div>
+</div>
+
 
       {/* Reviews Section */}
       <div className="product-reviews">
