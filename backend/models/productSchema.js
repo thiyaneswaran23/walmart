@@ -31,6 +31,16 @@ const productSchema = new mongoose.Schema({
     sellerName: String,
     productName: String,
     price: Number,
+      stock: {
+    type: Number,
+    required: true,
+    default: 0,
+   
+  },
+   category: {
+        type: String,
+        required: true,
+    },
     image: [String], 
     reviews: [reviewSchema], 
 });

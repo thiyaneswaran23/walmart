@@ -33,4 +33,25 @@ router.put('/update-profile', verifyToken, async (req, res) => {
   }
 });
 
+router.get('/:id', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.json({
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      gender: user.gender,
+      dob: user.dob,
+      address: user.address
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 module.exports = router;

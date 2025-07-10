@@ -25,11 +25,28 @@ function OrderPage() {
     const [activeReviewProductId, setActiveReviewProductId] = useState(null);
 
     useEffect(() => {
-        setUserName(localStorage.getItem('Name') || 'N/A');
-        setUserEmail(localStorage.getItem('email') || 'N/A');
-        setUserAddress(localStorage.getItem('address') || 'N/A');
-        setUserId(localStorage.getItem('Id'));
-    }, []);
+        const name = localStorage.getItem('Name') || 'N/A';
+        const email = localStorage.getItem('email') || 'N/A';
+        const address = localStorage.getItem('address') || '';
+        const id = localStorage.getItem('Id');
+
+        if (!address.trim()) {
+            alert('Please update your delivery address to proceed.');
+            navigate('/profile');
+            return;
+        }
+
+        setUserName(name);
+        setUserEmail(email);
+        setUserAddress(address);
+        setUserId(id);
+    }, [navigate]);
+
+    useEffect(() => {
+        if (userId && cartItems.length > 0) {
+            saveOrder();
+        }
+    }, [userId]);
 
     const handleBackToCart = () => {
         navigate('/cart');
@@ -56,32 +73,40 @@ function OrderPage() {
             alert('Failed to generate the receipt.');
         }
     };
-
- const handleSubmitReview = async (productId) => {
-  const rating = ratings[productId];
-  const comment = reviewText[productId];
-
-  // Basic validation
-  if (!rating || !comment) {
-    setMessages((prev) => ({
-      ...prev,
-      [productId]: '❗ Please provide both rating and comment.',
-    }));
-    return;
-  }
+const saveOrder = async () => {
+  const token = localStorage.getItem('token');
 
   try {
-    const token = localStorage.getItem('token');
-    const userId = localStorage.getItem('Id');      
-    const userName = localStorage.getItem('Name');     
+    const receiptElement = document.getElementById('receipt');
+    const canvas = await html2canvas(receiptElement, { scale: 2, useCORS: true });
+    const imgData = canvas.toDataURL('image/png');
 
-    const response = await axios.post(
-      `http://localhost:5000/api/pro/review/${productId}`,
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    const pdfBlob = pdf.output('blob');
+
+    const pdfBase64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(pdfBlob);
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+    });
+
+    const res = await axios.post(
+      'http://localhost:5000/api/pro/orders',
       {
         userId,
         userName,
-        rating,
-        comment,
+        userEmail,
+        userAddress,
+        cartItems,
+        subtotal,
+        discount,
+        total,
+        pdfBase64, 
       },
       {
         headers: {
@@ -90,33 +115,69 @@ function OrderPage() {
       }
     );
 
-    if (response.status === 200 || response.status === 201) {
-      setMessages((prev) => ({
-        ...prev,
-        [productId]: 'Review submitted successfully!',
-      }));
-      setReviewText((prev) => ({ ...prev, [productId]: '' }));
-      setRatings((prev) => ({ ...prev, [productId]: '' }));
-      setActiveReviewProductId(null);
-    } else {
-      setMessages((prev) => ({
-        ...prev,
-        [productId]: response.data.message || 'Error submitting review.',
-      }));
-    }
-
-    console.log("Submitting review:", { productId, rating, comment });
-
+    console.log('Order saved:', res.data);
   } catch (error) {
-    console.error('Review error:', error);
-    const errorMessage = error.response?.data?.message || 'Failed to submit review.';
-    setMessages((prev) => ({
-      ...prev,
-      [productId]: errorMessage,
-    }));
+    console.error('Order save error:', error.response?.data || error.message);
   }
 };
 
+
+    const handleSubmitReview = async (productId, sellerId) => {
+        const rating = ratings[productId];
+        const comment = reviewText[productId];
+
+        if (!rating || !comment) {
+            setMessages((prev) => ({
+                ...prev,
+                [productId]: 'Please provide both rating and comment.',
+            }));
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            const userId = localStorage.getItem('Id');
+            const userName = localStorage.getItem('Name');
+
+            const response = await axios.post(
+                `http://localhost:5000/api/pro/review/${productId}`,
+                {
+                    userId,
+                    userName,
+                    rating,
+                    comment,
+                    sellerId,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (response.status === 200 || response.status === 201) {
+                setMessages((prev) => ({
+                    ...prev,
+                    [productId]: 'Review submitted successfully!',
+                }));
+                setReviewText((prev) => ({ ...prev, [productId]: '' }));
+                setRatings((prev) => ({ ...prev, [productId]: '' }));
+                setActiveReviewProductId(null);
+            } else {
+                setMessages((prev) => ({
+                    ...prev,
+                    [productId]: response.data.message || 'Error submitting review.',
+                }));
+            }
+        } catch (error) {
+            console.error('Review error:', error);
+            const errorMessage = error.response?.data?.message || 'Failed to submit review.';
+            setMessages((prev) => ({
+                ...prev,
+                [productId]: errorMessage,
+            }));
+        }
+    };
 
     const handleStarClick = (productId, starValue) => {
         setRatings((prev) => ({ ...prev, [productId]: starValue }));
@@ -201,13 +262,15 @@ function OrderPage() {
                                             />
                                             <button
                                                 onClick={() =>
-                                                    handleSubmitReview(item.productId)
+                                                    handleSubmitReview(item.productId, item.sellerId)
                                                 }
                                             >
                                                 Submit Review
                                             </button>
                                             {messages[item.productId] && (
-                                                <p className="review-message">{messages[item.productId]}</p>
+                                                <p className="review-message">
+                                                    {messages[item.productId]}
+                                                </p>
                                             )}
                                         </div>
                                     )}

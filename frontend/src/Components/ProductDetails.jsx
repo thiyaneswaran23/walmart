@@ -12,69 +12,64 @@ const ProductDetails = () => {
   const [addedMessage, setAddedMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [messages, setMessages] = useState([]);
-const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState('');
   const navigate = useNavigate();
   const userId = localStorage.getItem("Id");
 
-useEffect(() => {
-  const fetchMessages = async () => {
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const { data } = await axios.get(`http://localhost:5000/api/messages/${userId}/${product.sellerId}/${id}`);
+        setMessages(data);
+      } catch (err) {
+        console.error('Error fetching messages:', err);
+      }
+    };
+
+    if (product && userId) {
+      fetchMessages();
+    }
+  }, [product, id, userId]);
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim()) return;
     try {
-      const { data } = await axios.get(`http://localhost:5000/api/messages/${userId}/${product.sellerId}/${id}`);
-      setMessages(data);
+      const { data } = await axios.post('http://localhost:5000/api/messages', {
+        senderId: userId,
+        receiverId: product.sellerId,
+        productId: id,
+        message: newMessage
+      });
+      setMessages((prev) => [...prev, data]);
+      setNewMessage('');
     } catch (err) {
-      console.error('Error fetching messages:', err);
+      console.error('Error sending message:', err);
     }
   };
 
-  if (product && userId) {
-    fetchMessages();
-  }
-}, [product, id, userId]);
-
-const handleSendMessage = async () => {
-  if (!newMessage.trim()) return;
-  try {
-    const { data } = await axios.post('http://localhost:5000/api/messages', {
-      senderId: userId,
-      receiverId: product.sellerId,
-      productId: id,
-      message: newMessage
-    });
-    setMessages((prev) => [...prev, data]);
-    setNewMessage('');
-  } catch (err) {
-    console.error('Error sending message:', err);
-  }
-};
-
-
-
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        // Fetch product details
-        const { data } = await axios.get("http://localhost:5000/api/pro/all-products");
-        const prod = data.find(p => p._id === id);
-        setProduct(prod);
-        setLoading(false);
+  try {
+    const { data } = await axios.get("http://localhost:5000/api/pro/all-products");
+    const prod = data.find(p => p._id === id);
+    setProduct(prod);
+    setLoading(false);
 
-        // Fetch recommendations
-        const recRes = await axios.get(`http://localhost:8000/recommend/${id}`);
-        setRecommended(recRes.data);
+    const recRes = await axios.get(`http://localhost:8000/recommend/${id}`);
+    
+    setRecommended(Array.isArray(recRes.data) ? recRes.data : []);
 
-        // Fetch predicted label using product name
-        if (prod?.productName) {
-          const labelRes = await axios.post("http://localhost:8000/predict-label", {
-            productName: prod.productName
-          });
-          setPredictedLabel(labelRes.data.predictedLabel);
-        }
-
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setLoading(false);
-      }
-    };
+    if (prod?.productName) {
+      const labelRes = await axios.post("http://localhost:8000/predict-label", {
+        productName: prod.productName
+      });
+      setPredictedLabel(labelRes.data.predictedLabel);
+    }
+  } catch (err) {
+    console.error("Error fetching data:", err);
+    setLoading(false);
+  }
+};
 
     fetchData();
   }, [id]);
@@ -82,6 +77,12 @@ const handleSendMessage = async () => {
   const handleAddToCart = async () => {
     if (!userId) {
       alert("Please log in to add items to cart.");
+      return;
+    }
+
+    if (quantity > product.stock) {
+      setAddedMessage(`❌ Only ${product.stock} item(s) available in stock.`);
+      setTimeout(() => setAddedMessage(''), 3000);
       return;
     }
 
@@ -94,7 +95,6 @@ const handleSendMessage = async () => {
         quantity: quantity,
         productId: product._id,
         sellerId: product.sellerId
-
       });
 
       setAddedMessage(`✅ Added ${quantity} item(s) to cart.`);
@@ -127,14 +127,11 @@ const handleSendMessage = async () => {
 
         <div className="product-header-content">
           <img src={product.image?.[0]} alt={product.productName} className="product-header-image" />
-
           <div className="product-header-text">
             <h1>{product.productName}</h1>
             <p className="price">₹{product.price}</p>
-            <p className="short-desc">{product.description?.substring(0, 100) || "No description available."}</p>
+            <p className="short-desc">Category: <strong>{product.category || "General"}</strong></p>
             <span className="category-badge">{predictedLabel || "General"}</span>
-           
-            
           </div>
         </div>
       </div>
@@ -148,7 +145,8 @@ const handleSendMessage = async () => {
           <h2>{product.productName}</h2>
           <p className="seller">Sold by: <strong>{product.sellerName}</strong></p>
           <p className="price">₹{product.price}</p>
-          <p className="desc">{product.description || "No description available."}</p>
+          <p className="stock">🧮 Stock Available: <strong>{product.stock}</strong></p>
+          <p className="desc">Category: <strong>{product.category || "General"}</strong></p>
 
           <div className="quantity-cart">
             <label htmlFor="qty">Qty:</label>
@@ -156,36 +154,46 @@ const handleSendMessage = async () => {
               id="qty"
               type="number"
               min="1"
+              max={product.stock}
               value={quantity}
-              onChange={(e) => setQuantity(Number(e.target.value))}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                if (val <= product.stock && val >= 1) {
+                  setQuantity(val);
+                }
+              }}
             />
-            <button onClick={handleAddToCart}>🛒 Add to Cart</button>
+            <button onClick={handleAddToCart} disabled={product.stock === 0}>🛒 Add to Cart</button>
             <button onClick={() => navigate('/cart')} className="go-to-cart-btn">🧺 Go to Cart</button>
           </div>
+
+          {product.stock === 0 && (
+            <p className="out-of-stock-msg">❌ Out of Stock</p>
+          )}
 
           {addedMessage && <p className="cart-message">{addedMessage}</p>}
         </div>
       </div>
 
+      {/* Chat Section */}
       <div className="chat-section">
-  <h3>💬 Message Seller</h3>
-  <textarea
-    rows="3"
-    value={newMessage}
-    onChange={(e) => setNewMessage(e.target.value)}
-    placeholder="Ask something about the product..."
-  />
-  <button onClick={handleSendMessage}>Send Message</button>
-  <div className="chat-history">
-    {messages.map((msg, idx) => (
-      <div key={idx} className={`chat-bubble ${msg.senderId === userId ? 'buyer' : 'seller'}`}>
-        <p>{msg.message}</p>
-        <small>{new Date(msg.timestamp).toLocaleString()}</small>
+        <h3>💬 Message Seller</h3>
+        <textarea
+          rows="3"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          placeholder="Ask something about the product..."
+        />
+        <button onClick={handleSendMessage}>Send Message</button>
+        <div className="chat-history">
+          {messages.map((msg, idx) => (
+            <div key={idx} className={`chat-bubble ${msg.senderId === userId ? 'buyer' : 'seller'}`}>
+              <p>{msg.message}</p>
+              <small>{new Date(msg.timestamp).toLocaleString()}</small>
+            </div>
+          ))}
+        </div>
       </div>
-    ))}
-  </div>
-</div>
-
 
       {/* Reviews Section */}
       <div className="product-reviews">

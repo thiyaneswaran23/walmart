@@ -6,19 +6,15 @@ import { FaTrash } from 'react-icons/fa';
 
 function Cart() {
     const [cartItems, setCartItems] = useState([]);
-const navigate = useNavigate();
+    const navigate = useNavigate();
+
     useEffect(() => {
         const fetchCart = async () => {
             const id = localStorage.getItem('Id');
             try {
                 const res = await axios.get(`http://localhost:5000/api/cart/cartItems/${id}`);
-            
-                const itemsWithQuantity = res.data.map(item => ({
-                    ...item,
-                
-                }));
-                setCartItems(itemsWithQuantity);
-                console.log(itemsWithQuantity);
+                setCartItems(res.data);
+                console.log(res.data);
             } catch (err) {
                 console.log(err);
             }
@@ -27,40 +23,45 @@ const navigate = useNavigate();
     }, []);
 
     const handleRemoveItem = async (id) => {
-    try {
-        await axios.delete(`http://localhost:5000/api/cart/cartItems/${id}`);
-        setCartItems(prevItems => prevItems.filter(item => item._id !== id));
-    } catch (err) {
-        console.error("api error ", err);
-    }
-};
+        try {
+            await axios.delete(`http://localhost:5000/api/cart/cartItems/${id}`);
+            setCartItems(prevItems => prevItems.filter(item => item._id !== id));
+        } catch (err) {
+            console.error("API error ", err);
+        }
+    };
 
-const handleCheckout = async () => {
-  const userId = localStorage.getItem("Id");
-  try {
-    await axios.post(`http://localhost:5000/api/cart/checkout/${userId}`);
-    navigate('/order', {
-      state: {
-        cartItems,
-        subtotal,
-        discount,
-        total
-      }
-    });
-      navigate('/order', {
+    const handleCheckout = async () => {
+        const userId = localStorage.getItem("Id");
+
+        try {
+           
+            const profileRes = await axios.get(`http://localhost:5000/api/profile/${userId}`);
+            const userAddress = profileRes.data.address;
+
+            if (!userAddress || userAddress.trim() === "") {
+                alert("Please complete your profile with an address before checkout.");
+                navigate('/profile');
+                return;
+            }
+
+           
+            await axios.post(`http://localhost:5000/api/cart/checkout/${userId}`);
+
+            navigate('/order', {
                 state: {
                     cartItems,
                     subtotal,
                     discount,
                     total
                 }
-            })
-  } catch (err) {
-    console.error('Checkout failed:', err);
-    alert('Checkout failed');
-  }
-};
+            });
 
+        } catch (err) {
+            console.error('Checkout failed:', err);
+            alert('Checkout failed');
+        }
+    };
 
     const handleQuantityChange = (index, newQuantity) => {
         const updatedCart = [...cartItems];
@@ -95,14 +96,13 @@ const handleCheckout = async () => {
                                             handleQuantityChange(index, e.target.value)
                                         }
                                     />
-                                  <button
-  className="remove-icon-btn"
-  onClick={() => handleRemoveItem(item._id)}
-  title="Remove Item"
->
-  <FaTrash />
-</button>
-
+                                    <button
+                                        className="remove-icon-btn"
+                                        onClick={() => handleRemoveItem(item._id)}
+                                        title="Remove Item"
+                                    >
+                                        <FaTrash />
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -124,15 +124,13 @@ const handleCheckout = async () => {
                     <span>Total</span>
                     <span>${total.toFixed(2)}</span>
                 </div>
-               
-                
 
- <button
-        className="checkout-btn"
-        onClick={()=>handleCheckout() }
-    >
-        Proceed to Checkout
-    </button>
+                <button
+                    className="checkout-btn"
+                    onClick={handleCheckout}
+                >
+                    Proceed to Checkout
+                </button>
             </div>
         </div>
     );
