@@ -39,16 +39,19 @@ router.get('/by-seller/:sellerId', async (req, res) => {
   const { sellerId } = req.params;
 
   try {
-    const messages = await Message.find({ receiverId: sellerId }) // messages sent TO the seller
-      .populate('senderId', 'name') // to get buyer name
-      .populate('productId', 'productName') // to get product name
+    const messages = await Message.find({ receiverId: sellerId })
+      .populate('senderId', 'name')
+      .populate('productId', 'productName');
 
-    // Create a unique list of conversations
     const uniqueConversationsMap = {};
 
     messages.forEach(msg => {
-      const key = `${msg.senderId._id}_${msg.productId._id}`;
+      if (!msg.senderId || !msg.productId) {
+        console.warn(`Skipping message ${msg._id} due to missing reference.`);
+        return;
+      }
 
+      const key = `${msg.senderId._id}_${msg.productId._id}`;
       if (!uniqueConversationsMap[key]) {
         uniqueConversationsMap[key] = {
           buyerId: msg.senderId._id,
@@ -67,6 +70,7 @@ router.get('/by-seller/:sellerId', async (req, res) => {
     res.status(500).json({ error: 'Failed to get conversations' });
   }
 });
+
 
 
 module.exports = router;
