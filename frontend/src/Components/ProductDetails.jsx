@@ -131,7 +131,7 @@ const ProductDetails = () => {
             <h1>{product.productName}</h1>
             <p className="price">₹{product.price}</p>
             <p className="short-desc">Category: <strong>{product.category || "General"}</strong></p>
-            <span className="category-badge">{predictedLabel || "General"}</span>
+           
           </div>
         </div>
       </div>

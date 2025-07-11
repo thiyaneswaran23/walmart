@@ -2,40 +2,16 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pandas as pd
 import requests
-import joblib
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 app = Flask(__name__)
 CORS(app)
 
-# Load model and vectorizer once
-model = joblib.load("product_classifier.pkl")
-vectorizer = joblib.load("vectorizer.pkl")
-
-# === Route 1: Predict product label ===
-@app.route('/predict-label', methods=['POST'])
-def predict_label():
-    try:
-        data = request.get_json()
-        product_name = data.get("productName")
-        if not product_name:
-            return jsonify({"error": "Product name not provided"}), 400
-
-        # Vectorize the input (reshape into list)
-        product_vector = vectorizer.transform([product_name])
-        prediction = model.predict(product_vector)[0]
-
-        return jsonify({"predictedLabel": prediction})
-    except Exception as e:
-        print("Prediction Error:", e)
-        return jsonify({"error": "Internal server error"}), 500
-
-# === Route 2: Recommend similar products ===
 @app.route('/recommend/<product_id>', methods=['GET'])
 def recommend(product_id):
     try:
-        # Fetch all products
+        # Fetch all products from Node backend
         response = requests.get("http://localhost:5000/api/pro/all-products")
         products = response.json()
 
@@ -44,18 +20,25 @@ def recommend(product_id):
         if product_id not in df['_id'].astype(str).values:
             return jsonify({"error": "Product not found"}), 404
 
-        # Clean and combine fields
+        # Fill missing values
         df['productName'] = df['productName'].fillna('')
         df['sellerName'] = df['sellerName'].fillna('')
+        df['category'] = df['category'].fillna('')
         df['price'] = df['price'].fillna(0)
 
+        # Combine fields for similarity
         df['combined'] = (
-            df['productName'] + ' ' + df['sellerName'] + ' ' + df['price'].astype(str)
+            df['productName'] + ' ' +
+            df['sellerName'] + ' ' +
+            df['category'] + ' ' +
+            df['price'].astype(str)
         ).str.lower()
 
+        # TF-IDF Vectorization
         tfidf = TfidfVectorizer()
         tfidf_matrix = tfidf.fit_transform(df['combined'])
 
+        # Get similarity for the given product
         idx = df[df['_id'].astype(str) == product_id].index[0]
         cosine_sim = cosine_similarity(tfidf_matrix[idx], tfidf_matrix).flatten()
 
