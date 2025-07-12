@@ -7,22 +7,28 @@ const verifyToken = require('../middleware/verifyToken');
 const cart=require('../models/cartSchema.js')
 router.post('/products', verifyToken, upload.single('image'), async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Image file is required.' });
+    }
+
     const product = new Products({
       sellerId: req.user.id,
       sellerName: req.body.sellerName,
       productName: req.body.productName,
-      category:req.body.category,
+      category: req.body.category,
       price: req.body.price,
-      stock: req.body.stock, 
+      stock: req.body.stock,
       image: [req.file.path],
     });
+
     await product.save();
     res.status(201).json({ message: 'Product created successfully', product });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Error in POST /products:', err); 
+    res.status(500).json({ error: err.message }); 
   }
 });
+
 router.put('/products/:id/refill', verifyToken, async (req, res) => {
   try {
     const { additionalStock } = req.body;
