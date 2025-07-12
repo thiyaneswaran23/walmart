@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useEffect, useState, useRef } from 'react';
 import { FaCartPlus, FaSearch, FaMicrophone, FaUser, FaSignOutAlt, FaBars, FaShoppingBag } from 'react-icons/fa';
+import { FaBox } from 'react-icons/fa';
 
 function CustomerHome() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ function CustomerHome() {
   const [sellers, setSellers] = useState([]);
   const [profile, setProfile] = useState(false);
   const recognitionRef = useRef(null);
+
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -55,6 +57,7 @@ function CustomerHome() {
   const handleCartClick = () => {
     navigate('/cart');
   };
+
 
   const handleAddToCart = async (product) => {
     const alreadyInCart = cart.some((item) => item._id === product._id);
@@ -298,6 +301,22 @@ function CustomerHome() {
                         <span className="fw-medium">My Profile</span>
                       </button>
                       <hr className="dropdown-divider my-2" />
+                            <button 
+        className="dropdown-item d-flex align-items-center py-3 px-3 rounded-2 mb-1"
+        onClick={() => {
+          navigate('/myorders');
+          setProfile(false);
+        }}
+        style={{ transition: 'all 0.2s' }}
+        onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+        onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent' }
+      >
+        <FaBox className="me-3 text-success" />
+        <span className="fw-medium">My Orders</span>
+      </button>
+
+      <hr className="dropdown-divider my-2" />
+
                       <button 
                         className="dropdown-item d-flex align-items-center py-3 px-3 rounded-2 text-danger"
                         onClick={() => {

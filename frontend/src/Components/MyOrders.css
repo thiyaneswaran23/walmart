@@ -1,0 +1,109 @@
+/* Container */
+.orders-container {
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fc;
+}
+
+/* Title */
+.orders-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 40px;
+  text-align: center;
+  color: #2c3e50;
+}
+
+/* Loading & Empty */
+.orders-loading,
+.orders-empty {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #6c757d;
+  margin-top: 40px;
+}
+
+/* Grid layout */
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 25px;
+}
+
+/* Card */
+.order-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.order-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+}
+
+/* Card content */
+.order-card-body {
+  padding: 25px;
+}
+
+/* Header */
+.order-id {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* Date */
+.order-date {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 15px;
+}
+
+/* Items */
+.order-items-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 15px;
+  margin-bottom: 8px;
+  color: #444;
+}
+
+.order-items-list {
+  padding-left: 20px;
+  margin-bottom: 20px;
+  color: #555;
+}
+
+/* User info */
+.order-user-info p {
+  font-size: 0.95rem;
+  margin: 4px 0;
+  color: #444;
+}
+
+/* Divider */
+.order-divider {
+  margin: 20px 0;
+  border: none;
+  height: 1px;
+  background-color: #eee;
+}
+
+/* Summary */
+.order-summary p {
+  font-size: 0.95rem;
+  margin: 6px 0;
+  color: #333;
+}
+
+.order-total {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #2c3e50;
+}

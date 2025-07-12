@@ -18,11 +18,18 @@ function OrderPage() {
     const [userEmail, setUserEmail] = useState('N/A');
     const [userAddress, setUserAddress] = useState('N/A');
     const [userId, setUserId] = useState(null);
+const [isPaymentDone, setIsPaymentDone] = useState(false);
 
     const [reviewText, setReviewText] = useState({});
     const [ratings, setRatings] = useState({});
     const [messages, setMessages] = useState({});
     const [activeReviewProductId, setActiveReviewProductId] = useState(null);
+useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+}, []);
 
     useEffect(() => {
         const name = localStorage.getItem('Name') || 'N/A';
@@ -42,11 +49,7 @@ function OrderPage() {
         setUserId(id);
     }, [navigate]);
 
-    useEffect(() => {
-        if (userId && cartItems.length > 0) {
-            saveOrder();
-        }
-    }, [userId]);
+   
 
     const handleBackToCart = () => {
         navigate('/cart');
@@ -205,29 +208,29 @@ function OrderPage() {
         );
     };
 
-   const handlePayment = async () => {
-  const amountInRupees = total;
-  const userName = localStorage.getItem('Name') || 'Customer';
-  const email = localStorage.getItem('email') || '';
-  const contact = '9999999999';
+  const handlePayment = async () => {
+    const amountInRupees = total;
+    const userName = localStorage.getItem('Name') || 'Customer';
+    const email = localStorage.getItem('email') || '';
+    const contact = '9999999999';
 
-  try {
-    const { data } = await axios.post('http://localhost:5000/api/payment/create-order', {
-      amount: amountInRupees,
-    });
+    try {
+        const { data } = await axios.post('http://localhost:5000/api/payment/create-order', {
+            amount: amountInRupees,
+        });
 
-    const options = {
-      key: "rzp_test_p3Qo5jkerzrsxB",
-      amount: data.amount,
-      currency: "INR",
-      name: "SmartShop",
-      description: "Order Payment",
-      order_id: data.id,
-      handler: async function (response) {
-        alert("✅ Payment Successful!");
+        const options = {
+            key: "rzp_test_p3Qo5jkerzrsxB",
+            amount: data.amount,
+            currency: "INR",
+            name: "SmartShop",
+            description: "Order Payment",
+            order_id: data.id,
+           handler: async function (response) {
+    alert("Payment Successful!");
 
-        try {
-          const saveRes = await axios.post("http://localhost:5000/api/payment/verify", {
+    try {
+        const verifyRes = await axios.post("http://localhost:5000/api/payment/verify", {
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_order_id: response.razorpay_order_id,
             razorpay_signature: response.razorpay_signature,
@@ -239,32 +242,41 @@ function OrderPage() {
             subtotal,
             discount,
             total,
-          });
+        });
 
-          const receiptUrl = saveRes.data.receiptUrl;
-          window.open(receiptUrl, "_blank");
-        } catch (err) {
-          console.error("Error saving payment:", err);
-          alert("⚠️ Payment saved but receipt not generated.");
-        }
-      },
-      prefill: {
-        name: userName,
-        email: email,
-        contact: contact,
-      },
-      theme: {
-        color: "#0d6efd",
-      },
-    };
+        const receiptUrl = verifyRes.data.receiptUrl;
+        window.open(receiptUrl, "_blank");
 
-    const rzp = new window.Razorpay(options);
-    rzp.open();
-  } catch (err) {
-    console.error('Payment Error:', err);
-    alert('❌ Payment Failed. Please try again.');
-  }
+        await saveOrder();
+
+        
+        setIsPaymentDone(true);
+
+    } catch (err) {
+        console.error("Error verifying or saving order:", err);
+        alert("Payment was successful, but order saving failed.");
+    }
+},
+
+            prefill: {
+                name: userName,
+                email: email,
+                contact: contact,
+            },
+            theme: {
+                color: "#0d6efd",
+            },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+
+    } catch (err) {
+        console.error('Payment Error:', err);
+        alert('Payment Failed. Please try again.');
+    }
 };
+
 
 
     return (
@@ -486,7 +498,7 @@ function OrderPage() {
                     </div>
                 </div>
 
-                {/* Action Buttons */}
+                
                 <div className="row mt-5">
   <div className="col-12">
     <div className="d-flex gap-3 justify-content-center">
@@ -498,20 +510,30 @@ function OrderPage() {
         Back to Cart
       </button>
 
+      <div className="text-center mt-4">
+  {isPaymentDone ? (
+    <>
+      <p className="text-success fs-5 fw-bold">
+        ✅ Your order will be delivered soon.
+      </p>
       <button 
-        className="btn btn-success btn-lg px-4"
+        className="btn btn-success btn-lg px-4 mt-3"
         onClick={generatePDF}
       >
         <Download className="me-2" size={20} />
         Download PDF Receipt
       </button>
+    </>
+  ) : (
+    <button 
+      className="btn btn-primary btn-lg px-4"
+      onClick={handlePayment}
+    >
+      💳 Pay Now
+    </button>
+  )}
+</div>
 
-      <button 
-        className="btn btn-primary btn-lg px-4"
-        onClick={handlePayment}
-      >
-        💳 Pay Now
-      </button>
     </div>
   </div>
 </div>

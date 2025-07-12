@@ -1,5 +1,5 @@
 import React from 'react';
-import {Routes,Route} from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import LandingPage from './Components/LandingPage';
 import Signup from './Components/Signup';
 import Signin from './Components/Signin';
@@ -9,25 +9,28 @@ import Cart from './Components/CartPage';
 import OrderPage from './Components/OrderPage';
 import ProductDetails from './Components/ProductDetails';
 import Profile from './Components/Profile';
-function App() {
-  
+import MyOrders from './Components/MyOrders';
 
+function App() {
   return (
-   
-    <Routes>
-      <Route path='/' element={<LandingPage/>}/>
-      <Route path='/signup' element={<Signup/>}/>
-       <Route path='/signin' element={<Signin/>}/>
+    <>
+      <Routes>
+        <Route path='/' element={<LandingPage />} />
+        <Route path='/signup' element={<Signup />} />
+        <Route path='/signin' element={<Signin />} />
+        
+       
         <Route element={<PrivateRoute />}>
           <Route path="/home" element={<Home />} />
           <Route path="/cart" element={<Cart />} />
-            <Route path="/order" element={<OrderPage />} />
-            <Route path="/product/:id" element={<ProductDetails />} />
-            <Route path='/profile' element={<Profile/>}/>
+          <Route path="/order" element={<OrderPage />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/myorders" element={<MyOrders />} />
         </Route>
-        
-    </Routes>
-  )
+      </Routes>
+    </>
+  );
 }
 
-export default App
+export default App;
