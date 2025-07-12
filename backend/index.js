@@ -35,6 +35,9 @@ const Seller=require('./routes/sellerProfileRoutes.js');
 app.use('/ap/profile',Seller);
 const message=require('./routes/message.js');
 app.use('/api/messages',message);
+const paymentRoute = require('./routes/payment');
+app.use('/api/payment', paymentRoute);
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     app.listen(5000, () => {

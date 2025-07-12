@@ -205,6 +205,49 @@ function OrderPage() {
         );
     };
 
+    const handlePayment = async () => {
+    const amountInRupees = total; // already float
+    const userName = localStorage.getItem('Name') || 'Customer';
+    const email = localStorage.getItem('email') || '';
+    const contact = '9999999999'; // optionally collect this from user
+
+    try {
+        const { data } = await axios.post('http://localhost:5000/api/payment/create-order', {
+            amount: amountInRupees,
+        });
+
+        const options = {
+            key:"rzp_test_p3Qo5jkerzrsxB", // replace with your real key
+            amount: data.amount,
+            currency: "INR",
+            name: "SmartShop",
+            description: "Order Payment",
+            order_id: data.id,
+            handler: function (response) {
+                alert("✅ Payment Successful!");
+                console.log("Payment ID:", response.razorpay_payment_id);
+                console.log("Order ID:", response.razorpay_order_id);
+                // Optionally mark order as paid in DB or redirect
+            },
+            prefill: {
+                name: userName,
+                email: email,
+                contact: contact,
+            },
+            theme: {
+                color: "#0d6efd",
+            },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+    } catch (err) {
+        console.error('Payment Error:', err);
+        alert('❌ Payment Failed. Please try again.');
+    }
+};
+
+
     return (
         <div className="container-fluid bg-light min-vh-100 py-5">
             <div className="container">
@@ -214,7 +257,7 @@ function OrderPage() {
                         <div className="text-center">
                             <CheckCircle className="text-success mb-3" size={64} />
                             <h1 className="display-4 fw-bold text-success mb-2">Order Confirmed!</h1>
-                            <p className="lead text-muted">Thank you for your purchase. Your order has been placed successfully.</p>
+                            <p className="lead text-muted">Pay Now To Complete The Process.</p>
                         </div>
                     </div>
                 </div>
@@ -417,7 +460,7 @@ function OrderPage() {
                                 <div className="card-body bg-success text-white text-center">
                                     <CheckCircle size={32} className="mb-2" />
                                     <h6 className="fw-semibold mb-1">Order Confirmed</h6>
-                                    <small>Your order is being processed</small>
+                                    <small>Pay Now</small>
                                 </div>
                             </div>
                         </div>
@@ -426,25 +469,34 @@ function OrderPage() {
 
                 {/* Action Buttons */}
                 <div className="row mt-5">
-                    <div className="col-12">
-                        <div className="d-flex gap-3 justify-content-center">
-                            <button 
-                                className="btn btn-outline-primary btn-lg px-4"
-                                onClick={handleBackToCart}
-                            >
-                                <ArrowLeft className="me-2" size={20} />
-                                Back to Cart
-                            </button>
-                            <button 
-                                className="btn btn-success btn-lg px-4"
-                                onClick={generatePDF}
-                            >
-                                <Download className="me-2" size={20} />
-                                Download PDF Receipt
-                            </button>
-                        </div>
-                    </div>
-                </div>
+  <div className="col-12">
+    <div className="d-flex gap-3 justify-content-center">
+      <button 
+        className="btn btn-outline-primary btn-lg px-4"
+        onClick={handleBackToCart}
+      >
+        <ArrowLeft className="me-2" size={20} />
+        Back to Cart
+      </button>
+
+      <button 
+        className="btn btn-success btn-lg px-4"
+        onClick={generatePDF}
+      >
+        <Download className="me-2" size={20} />
+        Download PDF Receipt
+      </button>
+
+      <button 
+        className="btn btn-primary btn-lg px-4"
+        onClick={handlePayment}
+      >
+        💳 Pay Now
+      </button>
+    </div>
+  </div>
+</div>
+
             </div>
         </div>
     );

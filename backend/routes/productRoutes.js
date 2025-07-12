@@ -169,7 +169,7 @@ router.get('/products-by-seller/:sellerName', async (req, res) => {
     const sellerName = req.params.sellerName;
 
     const products = await Products.find({
-      sellerName: { $regex: new RegExp(`^${sellerName}$`, 'i') } 
+      sellerName:sellerName
     });
 
     if (!products.length) {
