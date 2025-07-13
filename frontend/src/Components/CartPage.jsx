@@ -134,7 +134,7 @@ function Cart() {
                                                     <div className="col-md-4">
                                                         <h6 className="mb-1 fw-semibold">{item.productName}</h6>
                                                         <p className="mb-0 text-success fw-bold fs-5">
-                                                            ${item.price.toFixed(2)}
+                                                            ₹{item.price.toFixed(2)}
                                                         </p>
                                                     </div>
                                                     <div className="col-md-3">
@@ -164,7 +164,7 @@ function Cart() {
                                                     </div>
                                                     <div className="col-md-2">
                                                         <p className="mb-0 fw-bold text-primary fs-5">
-                                                            ${(item.price * item.quantity).toFixed(2)}
+                                                            ₹{(item.price * item.quantity).toFixed(2)}
                                                         </p>
                                                     </div>
                                                     <div className="col-md-1">
@@ -194,16 +194,16 @@ function Cart() {
                             <div className="card-body">
                                 <div className="d-flex justify-content-between align-items-center mb-3">
                                     <span className="text-muted">Subtotal</span>
-                                    <span className="fw-semibold fs-5">${subtotal.toFixed(2)}</span>
+                                    <span className="fw-semibold fs-5">₹{subtotal.toFixed(2)}</span>
                                 </div>
                                 <div className="d-flex justify-content-between align-items-center mb-3">
                                     <span className="text-muted">Discount</span>
-                                    <span className="text-success fw-semibold fs-5">-${discount.toFixed(2)}</span>
+                                    <span className="text-success fw-semibold fs-5">-₹{discount.toFixed(2)}</span>
                                 </div>
                                 <hr className="my-3" />
                                 <div className="d-flex justify-content-between align-items-center mb-4">
                                     <span className="fw-bold fs-4">Total</span>
-                                    <span className="fw-bold fs-4 text-primary">${total.toFixed(2)}</span>
+                                    <span className="fw-bold fs-4 text-primary">₹{total.toFixed(2)}</span>
                                 </div>
                                 
                                 <div className="d-grid gap-2">

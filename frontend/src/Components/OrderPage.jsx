@@ -371,7 +371,7 @@ useEffect(() => {
                                                             <div className="row text-sm">
                                                                 <div className="col-6">
                                                                     <span className="text-muted">Price: </span>
-                                                                    <span className="fw-semibold text-success">${item.price.toFixed(2)}</span>
+                                                                    <span className="fw-semibold text-success">₹{item.price.toFixed(2)}</span>
                                                                 </div>
                                                                 <div className="col-6">
                                                                     <span className="text-muted">Quantity: </span>
@@ -383,7 +383,7 @@ useEffect(() => {
                                                             <div className="text-end">
                                                                 <small className="text-muted d-block">Total</small>
                                                                 <span className="fw-bold text-primary fs-5">
-                                                                    ${(item.price * item.quantity).toFixed(2)}
+                                                                    ₹{(item.price * item.quantity).toFixed(2)}
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -466,16 +466,16 @@ useEffect(() => {
                                 <div className="card-body">
                                     <div className="d-flex justify-content-between align-items-center mb-3">
                                         <span className="text-muted">Items Total</span>
-                                        <span className="fw-semibold fs-5">${subtotal.toFixed(2)}</span>
+                                        <span className="fw-semibold fs-5">₹{subtotal.toFixed(2)}</span>
                                     </div>
                                     <div className="d-flex justify-content-between align-items-center mb-3">
                                         <span className="text-muted">Discount</span>
-                                        <span className="text-success fw-semibold fs-5">-${discount.toFixed(2)}</span>
+                                        <span className="text-success fw-semibold fs-5">-₹{discount.toFixed(2)}</span>
                                     </div>
                                     <hr className="my-3" />
                                     <div className="d-flex justify-content-between align-items-center mb-4">
                                         <span className="fw-bold fs-4">Grand Total</span>
-                                        <span className="fw-bold fs-4 text-primary">${total.toFixed(2)}</span>
+                                        <span className="fw-bold fs-4 text-primary">₹{total.toFixed(2)}</span>
                                     </div>
                                     
                                     <div className="alert alert-info">
