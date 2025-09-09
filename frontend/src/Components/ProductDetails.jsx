@@ -16,6 +16,8 @@ import {
   FaShare
 } from 'react-icons/fa';
 
+import { io } from 'socket.io-client';
+
 const ProductDetails = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -30,36 +32,59 @@ const ProductDetails = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem("Id");
 
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const { data } = await axios.get(`http://localhost:5000/api/messages/${userId}/${product.sellerId}/${id}`);
-        setMessages(data);
-      } catch (err) {
-        console.error('Error fetching messages:', err);
-      }
-    };
 
-    if (product && userId) {
-      fetchMessages();
-    }
-  }, [product, id, userId]);
+const socket = io('http://localhost:5000');
 
-  const handleSendMessage = async () => {
-    if (!newMessage.trim()) return;
+useEffect(() => {
+  const fetchMessages = async () => {
     try {
-      const { data } = await axios.post('http://localhost:5000/api/messages', {
-        senderId: userId,
-        receiverId: product.sellerId,
-        productId: id,
-        message: newMessage
-      });
-      setMessages((prev) => [...prev, data]);
-      setNewMessage('');
+      const { data } = await axios.get(`http://localhost:5000/api/messages/${userId}/${product.sellerId}/${id}`);
+      setMessages(data);
     } catch (err) {
-      console.error('Error sending message:', err);
+      console.error('Error fetching messages:', err);
     }
   };
+
+  if (product && userId) {
+    fetchMessages();
+  }
+
+  
+  socket.on('receiveMessage', (message) => {
+ 
+    if (
+      (message.senderId === product.sellerId && message.receiverId === userId && message.productId === id) ||
+      (message.senderId === userId && message.receiverId === product.sellerId && message.productId === id)
+    ) {
+      setMessages((prev) => [...prev, message]);
+    }
+  });
+
+  return () => {
+    socket.off('receiveMessage');
+  };
+}, [product, id, userId]);
+
+const handleSendMessage = async () => {
+  if (!newMessage.trim()) return;
+
+  const messageData = {
+    senderId: userId,
+    receiverId: product.sellerId,
+    productId: id,
+    message: newMessage,
+  };
+
+  try {
+    socket.emit('sendMessage', messageData);
+    const { data } = await axios.post('http://localhost:5000/api/messages', messageData);
+    setMessages((prev) => [...prev, data]);
+    setNewMessage('');
+  } catch (err) {
+    console.error('Error sending message:', err);
+  }
+};
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,10 +93,8 @@ const ProductDetails = () => {
         const prod = data.find(p => p._id === id);
         setProduct(prod);
         setLoading(false);
-
         const recRes = await axios.get(`http://localhost:8000/recommend/${id}`);
         setRecommended(Array.isArray(recRes.data) ? recRes.data : []);
-
         if (prod?.productName) {
           const labelRes = await axios.post("http://localhost:8000/predict-label", {
             productName: prod.productName
