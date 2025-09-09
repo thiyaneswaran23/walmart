@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { 
@@ -33,58 +33,66 @@ const ProductDetails = () => {
   const userId = localStorage.getItem("Id");
 
 
-const socket = io('http://localhost:5000');
 
-useEffect(() => {
-  const fetchMessages = async () => {
-    try {
-      const { data } = await axios.get(`http://localhost:5000/api/messages/${userId}/${product.sellerId}/${id}`);
-      setMessages(data);
-    } catch (err) {
-      console.error('Error fetching messages:', err);
-    }
-  };
+ const socketRef = useRef();
 
-  if (product && userId) {
+  // Initialize socket once
+  useEffect(() => {
+    socketRef.current = io('http://localhost:5000');
+
+    socketRef.current.on('receiveMessage', (message) => {
+      if (
+        product &&
+        ((message.senderId === product.sellerId && message.receiverId === userId && message.productId === id) ||
+         (message.senderId === userId && message.receiverId === product.sellerId && message.productId === id))
+      ) {
+        setMessages(prev => [...prev, message]);
+      }
+    });
+
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, [userId, id, product?.sellerId]);
+
+  // Fetch messages when product is loaded
+  useEffect(() => {
+    if (!product) return;
+    const fetchMessages = async () => {
+      try {
+        const { data } = await axios.get(`http://localhost:5000/api/messages/${userId}/${product.sellerId}/${id}`);
+        setMessages(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
     fetchMessages();
-  }
+  }, [product, userId, id]);
 
-  
-  socket.on('receiveMessage', (message) => {
- 
-    if (
-      (message.senderId === product.sellerId && message.receiverId === userId && message.productId === id) ||
-      (message.senderId === userId && message.receiverId === product.sellerId && message.productId === id)
-    ) {
-      setMessages((prev) => [...prev, message]);
+  const handleSendMessage = async () => {
+    if (!newMessage.trim()) return;
+    if (!product) return;
+
+    const messageData = {
+      senderId: userId,
+      receiverId: product.sellerId,
+      productId: id,
+      message: newMessage
+    };
+
+    try {
+      // Save to DB
+      await axios.post('http://localhost:5000/api/messages', messageData);
+
+      // Emit via socket
+      socketRef.current.emit('sendMessage', messageData);
+
+      // Do NOT manually append — socket listener will handle it
+      setNewMessage('');
+    } catch (err) {
+      console.error(err);
     }
-  });
-
-  return () => {
-    socket.off('receiveMessage');
   };
-}, [product, id, userId]);
-
-const handleSendMessage = async () => {
-  if (!newMessage.trim()) return;
-
-  const messageData = {
-    senderId: userId,
-    receiverId: product.sellerId,
-    productId: id,
-    message: newMessage,
-  };
-
-  try {
-    socket.emit('sendMessage', messageData);
-    const { data } = await axios.post('http://localhost:5000/api/messages', messageData);
-    setMessages((prev) => [...prev, data]);
-    setNewMessage('');
-  } catch (err) {
-    console.error('Error sending message:', err);
-  }
-};
-
 
   useEffect(() => {
     const fetchData = async () => {
